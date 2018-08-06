@@ -10,9 +10,8 @@ module "app" {
 module "vpc-main" {
   source = "../../../modules/network"
   service = "test"
-  env = "tet"
+  env = "test"
   public_subnet_a = "${lookup(var.subnet, "public_a")}"
   vpc_cidr = "${var.vpc_cidr}"
   private_subnet_c = "${lookup(var.subnet, "private_c")}"
-
 }
