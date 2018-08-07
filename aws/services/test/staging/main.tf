@@ -15,3 +15,10 @@ module "vpc-main" {
   vpc_cidr = "${var.vpc_cidr}"
   private_subnet_c = "${lookup(var.subnet, "private_c")}"
 }
+
+module "app-elb" {
+  source = "../../../modules/elb"
+  service = "test"
+  env = "test"
+  instance_ids = "${module.app.instance_ids}"
+}
