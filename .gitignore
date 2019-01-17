@@ -1,1 +1,3 @@
 aws/services/test/staging/.terraform
+aws/services/test/staging/terraform.tfstate
+aws/services/test/staging/terraform.tfstate.backup
