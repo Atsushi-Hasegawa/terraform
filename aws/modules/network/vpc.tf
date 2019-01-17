@@ -4,7 +4,8 @@ variable "service" {}
 
 resource "aws_vpc" "vpc-main" {
   cidr_block = "${var.vpc_cidr}"
+
   tags {
-    Name="${var.env}-${var.service}-vpc"
+    Name = "${var.env}-${var.service}-vpc"
   }
 }

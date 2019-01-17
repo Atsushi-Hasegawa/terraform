@@ -1,28 +1,37 @@
 variable "access_key" {}
 variable "secret_key" {}
 variable "region" {}
-variable "ami" {
-  default = ""
-}
-variable "instance_type" {
-  default = "t2.micro"
-}
-variable "count" {
-  default = 1
-}
-provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
-  region = "${var.region}"
+
+variable "availability_zones" {
+  default = ["ap-northeast-1a"]
 }
 
-variable "subnet" {
+variable "ec2" {
   default = {
-    public_a = "10.0.0.0/24"
-    private_c = "10.0.1.0/24"
+    ami           = "ami-f80e0596"
+    instance_type = "t2.micro"
+    count         = 1
   }
 }
 
-variable "vpc_cidr" {
-  default = "10.0.0.0/16"
+provider "aws" {
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+  region     = "${var.region}"
+}
+
+variable "network" {
+  default = {
+    public_a  = "10.0.0.0/24"
+    private_c = "10.0.1.0/24"
+    vpc_cidr  = "10.0.0.0/16"
+  }
+}
+
+variable "storage" {
+  default = {
+    name               = "testsample3"
+    acl                = "private"
+    cloudfront_comment = "cloudfront"
+  }
 }
