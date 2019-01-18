@@ -1,6 +1,7 @@
 variable "env" {}
 variable "service" {}
 variable "subnets" {}
+variable "count" {}
 variable "instance_ids" {}
 variable "vpc_id" {}
 variable "target_group_name" {}
@@ -17,10 +18,11 @@ resource "aws_lb" "app-lb" {
 }
 
 resource "aws_lb_target_group" "target-group" {
-  name     = "${var.target_group_name}"
-  port     = 443
-  protocol = "HTTPS"
-  vpc_id   = "${var.vpc_id}"
+  name        = "${var.target_group_name}"
+  port        = 443
+  protocol    = "HTTPS"
+  target_type = "instance"
+  vpc_id      = "${var.vpc_id}"
 
   health_check {
     interval            = 30
@@ -34,7 +36,7 @@ resource "aws_lb_target_group" "target-group" {
 }
 
 resource "aws_lb_target_group_attachment" "lb-target-group-attachment" {
-  count            = "${length(split(",", var.instance_ids))}"
+  count            = "${var.count}"
   target_group_arn = "${aws_lb_target_group.target-group.arn}"
   target_id        = "${element(split(",",var.instance_ids),count.index)}"
   port             = 443

@@ -13,9 +13,9 @@ resource "aws_cloudfront_distribution" "cloudfront" {
   }
 
   enabled             = true
-  price_class         = "PriceClass_200"
   retain_on_delete    = true
   is_ipv6_enabled     = true
+  price_class         = "PriceClass_200"
   default_root_object = "index.html"
 
   default_cache_behavior {
