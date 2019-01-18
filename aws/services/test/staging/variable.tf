@@ -3,7 +3,7 @@ variable "secret_key" {}
 variable "region" {}
 
 variable "availability_zones" {
-  default = ["ap-northeast-1a"]
+  default = ["ap-northeast-1a", "ap-northeast-1c"]
 }
 
 variable "ec2" {
@@ -22,9 +22,9 @@ provider "aws" {
 
 variable "network" {
   default = {
-    public_a  = "10.0.0.0/24"
-    private_c = "10.0.1.0/24"
-    vpc_cidr  = "10.0.0.0/16"
+    public_subnet  = "10.0.0.0/24"
+    private_subnet = "10.0.1.0/24"
+    vpc_cidr       = "10.0.0.0/16"
   }
 }
 
@@ -33,5 +33,11 @@ variable "storage" {
     name               = "testsample3"
     acl                = "private"
     cloudfront_comment = "cloudfront"
+  }
+}
+
+variable "lb" {
+  default = {
+    target_group_name = "web"
   }
 }

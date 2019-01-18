@@ -1,33 +1,52 @@
 variable "env" {}
 variable "service" {}
+variable "subnets" {}
 variable "instance_ids" {}
-variable "availability_zones" {}
+variable "vpc_id" {}
+variable "target_group_name" {}
 
-resource "aws_elb" "app-elb" {
+resource "aws_lb" "app-lb" {
   name               = "${var.env}-${var.service}-${lookup(var.listener, "name")}"
-  availability_zones = ["${var.availability_zones}"]
-
-  listener {
-    instance_port     = "${lookup(var.listener, "listener_port")}"
-    instance_protocol = "${lookup(var.listener, "listener_protocol")}"
-    lb_port           = "${lookup(var.listener, "lb_port")}"
-    lb_protocol       = "${lookup(var.listener, "lb_protocol")}"
-  }
-
-  health_check {
-    healthy_threshold   = "${lookup(var.health_check, "healthy_threshold")}"
-    unhealthy_threshold = "${lookup(var.health_check, "unhealthy_threshold")}"
-    timeout             = "${lookup(var.health_check, "timeout")}"
-    target              = "${lookup(var.health_check, "path")}"
-    interval            = "${lookup(var.health_check, "interval")}"
-  }
-
-  instances                   = ["${var.instance_ids}"]
-  cross_zone_load_balancing   = true
-  connection_draining         = true
-  connection_draining_timeout = 400
+  load_balancer_type = "application"
+  internal           = false
+  subnets            = ["${split(",", var.subnets)}"]
 
   tags {
     Name = "${var.env}-${var.service}-elb"
+  }
+}
+
+resource "aws_lb_target_group" "target-group" {
+  name     = "${var.target_group_name}"
+  port     = 443
+  protocol = "HTTPS"
+  vpc_id   = "${var.vpc_id}"
+
+  health_check {
+    interval            = 30
+    path                = "/try/ping"
+    port                = 443
+    protocol            = "HTTPS"
+    timeout             = 5
+    unhealthy_threshold = 2
+    matcher             = 200
+  }
+}
+
+resource "aws_lb_target_group_attachment" "lb-target-group-attachment" {
+  count            = "${length(split(",", var.instance_ids))}"
+  target_group_arn = "${aws_lb_target_group.target-group.arn}"
+  target_id        = "${element(split(",",var.instance_ids),count.index)}"
+  port             = 443
+}
+
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = "${aws_lb.app-lb.arn}"
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.target-group.arn}"
+    type             = "forward"
   }
 }

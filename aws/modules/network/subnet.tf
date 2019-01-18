@@ -1,20 +1,24 @@
-variable "public_subnet_a" {}
-variable "private_subnet_c" {}
+variable "public_subnet" {}
+variable "private_subnet" {}
 
-resource "aws_subnet" "public_a" {
+resource "aws_subnet" "public_subnet" {
   vpc_id     = "${aws_vpc.vpc-main.id}"
-  cidr_block = "${var.public_subnet_a}"
+  cidr_block = "${var.public_subnet}"
 
   tags {
-    Name = "${var.env}-${var.service}-public_a"
+    Name = "${var.env}-${var.service}-public_subnet"
   }
 }
 
-resource "aws_subnet" "private_c" {
+resource "aws_subnet" "private_subnet" {
   vpc_id     = "${aws_vpc.vpc-main.id}"
-  cidr_block = "${var.private_subnet_c}"
+  cidr_block = "${var.private_subnet}"
 
   tags {
-    Name = "${var.env}-${var.service}-private_c"
+    Name = "${var.env}-${var.service}-private"
   }
+}
+
+output "subnet_ids" {
+  value = "${aws_subnet.public_subnet.id},${aws_subnet.private_subnet.id}"
 }

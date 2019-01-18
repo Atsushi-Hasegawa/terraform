@@ -1,30 +1,31 @@
-/*
 module "app" {
-  source = "../../../modules/ec2"
-  service = "project"
-  env = "staging"
-  ami = "${lookup(var.ec2,"ami")}"
+  source        = "../../../modules/ec2"
+  service       = "project"
+  env           = "staging"
+  ami           = "${lookup(var.ec2,"ami")}"
   instance_type = "${lookup(var.ec2, "instance_type")}"
-  count = "${lookup(var.ec2,"count")}"
+  count         = "${lookup(var.ec2,"count")}"
 }
 
 module "vpc-main" {
-  source = "../../../modules/network"
-  service = "project"
-  env = "staging"
-  public_subnet_a = "${lookup(var.network, "public_a")}"
-  vpc_cidr = "${lookup(var.network, "vpc_cidr")}"
-  private_subnet_c = "${lookup(var.network, "private_c")}"
+  source         = "../../../modules/network"
+  service        = "project"
+  env            = "staging"
+  public_subnet  = "${lookup(var.network, "public_subnet")}"
+  vpc_cidr       = "${lookup(var.network, "vpc_cidr")}"
+  private_subnet = "${lookup(var.network, "private_subnet")}"
 }
 
-module "app-elb" {
-  source = "../../../modules/elb"
-  service = "project"
-  env = "staging"
-  instance_ids = "${join(",",module.app.instance_ids)}"
-  availability_zones = "${join(",",var.availability_zones)}"
+module "app-lb" {
+  source            = "../../../modules/elb"
+  service           = "project"
+  env               = "staging"
+  instance_ids      = "${join(",",module.app.instance_ids)}"
+  subnets           = "${module.vpc-main.subnet_ids}"
+  target_group_name = "${lookup(var.lb, "target_group_name")}"
+  vpc_id            = "${module.vpc-main.vpc_id}"
 }
-*/
+
 module "s3-cloudfront" {
   source                           = "../../../modules/s3"
   service                          = "project"

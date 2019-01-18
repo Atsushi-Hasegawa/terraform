@@ -9,3 +9,7 @@ resource "aws_vpc" "vpc-main" {
     Name = "${var.env}-${var.service}-vpc"
   }
 }
+
+output "vpc_id" {
+  value = "${aws_vpc.vpc-main.id}"
+}
