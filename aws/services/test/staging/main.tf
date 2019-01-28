@@ -21,7 +21,7 @@ module "app-lb" {
   source            = "../../../modules/elb"
   service           = "project"
   env               = "staging"
-  instance_ids      = "${join(",",module.app.instance_ids)}"
+  instance_ids      = "${module.app.instance_ids}"
   count             = "${module.app.instance_count}"
   subnets           = "${module.vpc-main.subnet_ids}"
   target_group_name = "${lookup(var.lb, "target_group_name")}"

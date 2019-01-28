@@ -19,4 +19,5 @@ resource "aws_instance" "app" {
 resource "aws_eip" "api-eip" {
   count    = "${aws_instance.app.count}"
   instance = "${element(aws_instance.app.*.id, count.index)}"
+  vpc      = true
 }

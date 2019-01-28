@@ -1,4 +1,3 @@
-
 variable "subnets" {
   type = "list"
 }

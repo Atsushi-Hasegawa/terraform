@@ -2,7 +2,11 @@ variable "env" {}
 variable "service" {}
 variable "subnets" {}
 variable "count" {}
-variable "instance_ids" {}
+
+variable "instance_ids" {
+  type = "list"
+}
+
 variable "vpc_id" {}
 variable "target_group_name" {}
 
@@ -38,7 +42,7 @@ resource "aws_lb_target_group" "target-group" {
 resource "aws_lb_target_group_attachment" "lb-target-group-attachment" {
   count            = "${var.count}"
   target_group_arn = "${aws_lb_target_group.target-group.arn}"
-  target_id        = "${element(split(",",var.instance_ids),count.index)}"
+  target_id        = "${element(var.instance_ids, count.index)}"
   port             = 443
 }
 
