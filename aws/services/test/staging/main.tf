@@ -1,12 +1,10 @@
 module "vpc-main" {
-  source         = "../../../modules/network"
-  service        = "project"
-  env            = "staging"
-  public_subnet  = "${lookup(var.network, "public_subnet")}"
-  private_subnet = "${lookup(var.network, "private_subnet")}"
-  vpc_cidr       = "${lookup(var.network, "vpc_cidr")}"
-  public_az      = "${lookup(var.network, "public_az")}"
-  private_az     = "${lookup(var.network, "private_az")}"
+  source             = "../../../modules/network"
+  service            = "project"
+  env                = "staging"
+  vpc_cidr           = "${var.vpc}"
+  subnets            = "${var.subnets}"
+  availability_zones = "${var.availability_zones}"
 }
 
 module "app" {

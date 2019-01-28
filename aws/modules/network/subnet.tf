@@ -1,28 +1,23 @@
-variable "public_subnet" {}
-variable "private_subnet" {}
-variable "public_az" {}
-variable "private_az" {}
 
-resource "aws_subnet" "public_subnet" {
-  vpc_id            = "${aws_vpc.vpc-main.id}"
-  cidr_block        = "${var.public_subnet}"
-  availability_zone = "${var.public_az}"
-
-  tags {
-    Name = "${var.env}-${var.service}-public_subnet"
-  }
+variable "subnets" {
+  type = "list"
 }
 
-resource "aws_subnet" "private_subnet" {
+variable "availability_zones" {
+  type = "list"
+}
+
+resource "aws_subnet" "public_subnet" {
+  count             = "${length(var.subnets)}"
   vpc_id            = "${aws_vpc.vpc-main.id}"
-  cidr_block        = "${var.private_subnet}"
-  availability_zone = "${var.private_az}"
+  cidr_block        = "${element(var.subnets, count.index)}"
+  availability_zone = "${element(var.availability_zones, count.index)}"
 
   tags {
-    Name = "${var.env}-${var.service}-private"
+    Name = "${var.env}-${var.service}${format("%02d", count.index + 1)}"
   }
 }
 
 output "subnet_ids" {
-  value = "${aws_subnet.public_subnet.id},${aws_subnet.private_subnet.id}"
+  value = "${aws_subnet.public_subnet.*.id}"
 }

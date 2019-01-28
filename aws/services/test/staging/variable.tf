@@ -2,8 +2,20 @@ variable "access_key" {}
 variable "secret_key" {}
 variable "region" {}
 
+provider "aws" {
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+  region     = "${var.region}"
+}
+
 variable "availability_zones" {
-  default = ["ap-northeast-1a", "ap-northeast-1c"]
+  type = "list"
+
+  default = [
+    "ap-northeast-1a",
+    "ap-northeast-1c",
+    "ap-northeast-1d",
+  ]
 }
 
 variable "ec2" {
@@ -14,20 +26,18 @@ variable "ec2" {
   }
 }
 
-provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
-  region     = "${var.region}"
+variable "vpc" {
+  default = "10.0.0.0/16"
 }
 
-variable "network" {
-  default = {
-    public_subnet  = "10.0.0.0/24"
-    private_subnet = "10.0.1.0/24"
-    vpc_cidr       = "10.0.0.0/16"
-    public_az      = "ap-northeast-1a"
-    private_az     = "ap-northeast-1c"
-  }
+variable "subnets" {
+  type = "list"
+
+  default = [
+    "10.0.0.0/24",
+    "10.0.1.0/24",
+    "10.0.2.0/24",
+  ]
 }
 
 variable "storage" {
