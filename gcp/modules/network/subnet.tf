@@ -5,7 +5,7 @@ variable "region" {}
 variable "env" {}
 variable "service" {}
 
-resource "google_compute_network" "vpc-network" {
+resource "google_compute_network" "web-network" {
   name = "${var.vpc_network_name}"
   auto_create_subnetworks = false
   routing_mode = "REGIONAL"
@@ -14,7 +14,7 @@ resource "google_compute_network" "vpc-network" {
 resource "google_compute_subnetwork" "subnetwork" {
   name = "${var.subnetwork_name}"
   ip_cidr_range = "${var.subnetwork_cidr_range}"
-  network = "${google_compute_network.vpc-network.self_link}"
+  network = "${google_compute_network.web-network.self_link}"
   region = "${var.region}"
 }
 
@@ -23,5 +23,5 @@ output "subnetwork" {
 }
 
 output "network" {
-  value = "${google_compute_network.vpc-network.self_link}"
+  value = "${google_compute_network.web-network.self_link}"
 }
