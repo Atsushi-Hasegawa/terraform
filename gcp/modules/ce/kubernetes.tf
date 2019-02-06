@@ -7,6 +7,16 @@ resource "google_container_cluster" "container-cluster" {
   zone               = "${var.zone}"
   initial_node_count = "${lookup(var.container, "node_count")}"
 
+  addons_config {
+    http_load_balancing {
+      disabled = true
+    }
+
+    horizontal_pod_autoscaling {
+      disabled = true
+    }
+  }
+
   network    = "${lookup(var.network, "network")}"
   subnetwork = "${lookup(var.network, "subnetwork")}"
 }
