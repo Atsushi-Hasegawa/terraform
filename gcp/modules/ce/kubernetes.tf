@@ -1,7 +1,3 @@
-variable "container" {
-  type = "map"
-}
-
 resource "google_container_cluster" "container-cluster" {
   name               = "${lookup(var.container, "name")}"
   zone               = "${var.zone}"

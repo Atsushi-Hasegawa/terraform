@@ -1,16 +1,3 @@
-variable "zone" {}
-
-variable "engine" {
-  type = "map"
-}
-
-variable "network" {
-  type = "map"
-}
-
-variable "env" {}
-variable "service" {}
-
 resource "google_compute_instance" "compute-instance" {
   count        = "${lookup(var.engine, "count")}"
   name         = "${lookup(var.engine, "instance_name")}"

@@ -1,12 +1,3 @@
-variable "zone" {}
-variable "compute_firewall_name" {}
-
-variable "ports" {
-  type = "list"
-}
-
-variable "tags" {}
-
 resource "google_compute_firewall" "web" {
   name    = "${var.compute_firewall_name}"
   network = "${google_compute_network.network.name}"

@@ -1,14 +1,3 @@
-variable "vpc_network_name" {}
-variable "subnetwork_name" {}
-
-variable "subnetwork_cidr_range" {
-  default = "10.0.0.0/8"
-}
-
-variable "region" {}
-variable "env" {}
-variable "service" {}
-
 resource "google_compute_network" "network" {
   name                    = "${var.vpc_network_name}"
   auto_create_subnetworks = false
