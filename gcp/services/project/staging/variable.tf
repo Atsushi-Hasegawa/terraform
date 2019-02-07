@@ -49,3 +49,17 @@ variable "container" {
     node_count     = 1
   }
 }
+
+variable "storage" {
+  default = {
+    name     = "storage"
+    location = "asia-northeast1"
+  }
+}
+
+variable "service_account" {
+  default = {
+    account_id   = "storage-account"
+    display_name = "storage-account"
+  }
+}

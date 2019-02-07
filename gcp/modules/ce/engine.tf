@@ -1,6 +1,6 @@
 resource "google_compute_instance" "compute-instance" {
   count        = "${lookup(var.engine, "count")}"
-  name         = "${lookup(var.engine, "instance_name")}"
+  name         = "${lookup(var.engine, "instance_name")}${format("%02d", count.index+1)}"
   machine_type = "${lookup(var.engine, "machine_type")}"
   zone         = "${var.zone}"
 

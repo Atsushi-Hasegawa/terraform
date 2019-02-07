@@ -21,3 +21,11 @@ module "engine" {
   zone      = "${var.zone}"
   network   = "${module.network.network}"
 }
+
+module "storage" {
+  source          = "../../../modules/storage"
+  service         = "${var.project}"
+  env             = "staging"
+  storage         = "${var.storage}"
+  service_account = "${var.service_account}"
+}
