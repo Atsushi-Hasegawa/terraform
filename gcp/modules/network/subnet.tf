@@ -1,12 +1,12 @@
 resource "google_compute_network" "network" {
-  name                    = "${var.vpc_network_name}"
+  name                    = "${lookup(var.network, "vpc_name")}"
   auto_create_subnetworks = false
   routing_mode            = "REGIONAL"
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  name          = "${var.subnetwork_name}"
-  ip_cidr_range = "${var.subnetwork_cidr_range}"
+  name          = "${lookup(var.network, "subnetwork_name")}"
+  ip_cidr_range = "${lookup(var.network, "subnetwork_cidr_range")}"
   network       = "${google_compute_network.network.self_link}"
   region        = "${var.region}"
 }

@@ -12,20 +12,25 @@ variable zone {
 }
 
 variable "firewall" {
-  default = {
-    compute_firewall_name = "firewall"
-    tags                  = "web"
-  }
-}
+  type = "list"
 
-variable "firewall_port" {
-  type    = "list"
-  default = ["80", "443"]
+  default = [
+    {
+      name = "allow-http"
+      tag  = "http"
+      port = 80
+    },
+    {
+      name = "allow-https"
+      tag  = "https"
+      port = 443
+    },
+  ]
 }
 
 variable "network" {
   default = {
-    vpc_network_name      = "network"
+    vpc_name              = "network"
     subnetwork_name       = "subnetwork"
     subnetwork_cidr_range = "192.168.0.0/20"
   }
@@ -61,5 +66,19 @@ variable "service_account" {
   default = {
     account_id   = "storage-account"
     display_name = "storage-account"
+  }
+}
+
+variable "redis" {
+  default = {
+    name                    = "redis"
+    tier                    = "STANDARD_HA"
+    memory_size_gb          = 1
+    location_id             = "asia-northeast1-a"
+    alternative_location_id = "asia-northeast1-b"
+    version                 = "REDIS_3_2"
+
+    //インタスタンスの予約ip範囲を設定(subnetworkのcidr範囲のため192.168.0.0/20以外)
+    reserved_ip_range = "10.0.0.0/29"
   }
 }

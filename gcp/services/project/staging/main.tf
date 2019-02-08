@@ -1,15 +1,11 @@
 module "network" {
-  source                = "../../../modules/network"
-  service               = "project"
-  env                   = "staging"
-  compute_firewall_name = "${lookup(var.firewall, "compute_firewall_name")}"
-  tags                  = "${lookup(var.firewall, "tags")}"
-  ports                 = "${var.firewall_port}"
-  region                = "${var.region}"
-  zone                  = "${var.zone}"
-  vpc_network_name      = "${lookup(var.network, "vpc_network_name")}"
-  subnetwork_name       = "${lookup(var.network, "subnetwork_name")}"
-  subnetwork_cidr_range = "${lookup(var.network, "subnetwork_cidr_range")}"
+  source   = "../../../modules/network"
+  service  = "project"
+  env      = "staging"
+  firewall = "${var.firewall}"
+  region   = "${var.region}"
+  zone     = "${var.zone}"
+  network  = "${var.network}"
 }
 
 module "engine" {
@@ -28,4 +24,11 @@ module "storage" {
   env             = "staging"
   storage         = "${var.storage}"
   service_account = "${var.service_account}"
+}
+
+module "memorystore" {
+  source  = "../../../modules/memorystore"
+  env     = "staging"
+  redis   = "${var.redis}"
+  network = "${module.network.network}"
 }
