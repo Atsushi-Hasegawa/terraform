@@ -19,11 +19,19 @@ variable "firewall" {
       name = "allow-http"
       tag  = "http"
       port = 80
+      ip   = "192.168.0.0/20"
     },
     {
       name = "allow-https"
       tag  = "https"
       port = 443
+      ip   = "192.168.0.0/20"
+    },
+    {
+      name = "alllow-ssh"
+      tag  = "ssh"
+      port = 22
+      ip   = "0.0.0.0/0"
     },
   ]
 }
