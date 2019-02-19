@@ -46,9 +46,9 @@ variable "network" {
 
 variable "compute_engine" {
   default = {
-    count         = 2
+    count         = 1
     instance_name = "test-compute"
-    machine_type  = "n1-standard-1"
+    machine_type  = "n1-standard-2"
     image         = "ubuntu-os-cloud/ubuntu-1804-lts"
     size_gb       = 10
     type          = "pd-standard"
