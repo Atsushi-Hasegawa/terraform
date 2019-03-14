@@ -6,3 +6,9 @@ resource "aws_route_table" "rt" {
     gateway_id = "${aws_internet_gateway.igw.id}"
   }
 }
+
+resource "aws_route_table_association" "association" {
+  count          = "${length(var.subnets)}"
+  subnet_id      = "${aws_subnet.public_subnet.*.id[count.index]}"
+  route_table_id = "${aws_route_table.rt.id}"
+}
