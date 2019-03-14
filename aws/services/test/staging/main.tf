@@ -36,3 +36,21 @@ module "s3-cloudfront" {
   bucket_acl                       = "${lookup(var.storage, "acl")}"
   cloudfront_origin_access_comment = "${lookup(var.storage, "cloudfront_comment")}"
 }
+
+module "eks" {
+  source                       = "../../../modules/eks"
+  service                      = "project"
+  env                          = "staging"
+  subnets                      = "${module.vpc-main.subnet_ids}"
+  master-security              = "${var.master-security}"
+  master-security-rule         = "${var.master-security-rule}"
+  master-role                  = "${var.master-role}"
+  worker-role                  = "${var.worker-role}"
+  vpc                          = "${module.vpc-main.vpc_id}"
+  worker-security              = "${var.worker-security}"
+  worker-security-rule         = "${var.worker-security-rule}"
+  worker-egress-security-rule  = "${var.worker-egress-security-rule}"
+  worker-ingress-security-rule = "${var.worker-ingress-security-rule}"
+  autoscale                    = "${var.autoscale}"
+  eks                          = "${var.eks}"
+}

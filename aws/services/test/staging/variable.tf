@@ -53,3 +53,109 @@ variable "lb" {
     target_group_name = "web"
   }
 }
+
+variable "autoscale" {
+  type = "map"
+
+  default = {
+    min_size         = 1
+    max_size         = 2
+    desired_capacity = 2
+    name             = "autoscale"
+  }
+}
+
+variable "master-role" {
+  type = "map"
+
+  default = {
+    name = "cluster-master-role"
+  }
+}
+
+variable "master-security" {
+  type = "map"
+
+  default = {
+    name       = "cluster-master-security"
+    from_port  = 0
+    to_port    = 0
+    protocol   = "-1"
+    cidr_block = "0.0.0.0/0"
+    tag = ""
+  }
+}
+
+variable "master-security-rule" {
+  type = "map"
+
+  default = {
+    from_port  = 443
+    to_port    = 443
+    type       = "ingress"
+    protocol   = "tcp"
+    cidr_block = "0.0.0.0/0"
+  }
+}
+
+variable "eks" {
+  type = "map"
+
+  default = {
+    name = "cluster-master"
+  }
+}
+
+variable "worker-role" {
+  type = "map"
+
+  default = {
+    name = "worker-role"
+  }
+}
+
+variable "worker-security" {
+  type = "map"
+
+  default = {
+    name       = "worker-security"
+    from_port  = 0
+    to_port    = 0
+    protocol   = "-1"
+    cidr_block = "0.0.0.0/0"
+    tag        = "worker-security"
+  }
+}
+
+variable "worker-security-rule" {
+  type = "map"
+
+  default = {
+    type      = "ingress"
+    from_port = 0
+    to_port   = 65535
+    protocol  = "-1"
+  }
+}
+
+variable "worker-egress-security-rule" {
+  type = "map"
+
+  default = {
+    type      = "ingress"
+    from_port = 1025
+    to_port   = 65535
+    protocol  = "tcp"
+  }
+}
+
+variable "worker-ingress-security-rule" {
+  type = "map"
+
+  default = {
+    type      = "ingress"
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+  }
+}
