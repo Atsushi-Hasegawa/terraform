@@ -32,7 +32,9 @@ variable "worker-ingress-security-rule" {
   type = "map"
 }
 
-variable "subnets" { type = "list" }
+variable "subnets" {
+  type = "list"
+}
 
 variable "autoscale" {
   type = "map"

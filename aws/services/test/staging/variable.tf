@@ -103,6 +103,8 @@ variable "eks" {
 
   default = {
     name = "cluster-master"
+    key_name = "developer"
+    instance_type = "m4.large"
   }
 }
 
