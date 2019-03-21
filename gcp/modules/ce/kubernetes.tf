@@ -22,6 +22,7 @@ resource "google_container_node_pool" "container-np" {
   zone       = "${var.zone}"
   cluster    = "${google_container_cluster.container-cluster.name}"
   node_count = "${google_container_cluster.container-cluster.initial_node_count}"
+
   node_config {
     machine_type = "${lookup(var.engine, "machine_type")}"
   }

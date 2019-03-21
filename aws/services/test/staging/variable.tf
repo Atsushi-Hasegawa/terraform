@@ -82,7 +82,7 @@ variable "master-security" {
     to_port    = 0
     protocol   = "-1"
     cidr_block = "0.0.0.0/0"
-    tag = ""
+    tag        = ""
   }
 }
 
@@ -102,8 +102,8 @@ variable "eks" {
   type = "map"
 
   default = {
-    name = "cluster-master"
-    key_name = "developer"
+    name          = "cluster-master"
+    key_name      = "developer"
     instance_type = "m4.large"
   }
 }

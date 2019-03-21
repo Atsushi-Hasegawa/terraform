@@ -3,13 +3,16 @@ variable "env" {}
 variable "ami" {}
 variable "instance_type" {}
 variable "count" {}
-variable "subnet_id" {}
+
+variable "subnet_id" {
+  type = "list"
+}
 
 resource "aws_instance" "app" {
   count         = "${var.count}"
   ami           = "${var.ami}"
   instance_type = "${var.instance_type}"
-  subnet_id     = "${var.subnet_id}"
+  subnet_id     = "${var.subnet_id[count.index]}"
 
   tags {
     Name = "${format("web%02d", count.index+1)}"

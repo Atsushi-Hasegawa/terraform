@@ -1,6 +1,8 @@
 variable "env" {}
 variable "service" {}
-variable "subnets" {}
+variable "subnets" {
+  type = "list"
+}
 variable "count" {}
 
 variable "instance_ids" {
@@ -14,7 +16,7 @@ resource "aws_lb" "app-lb" {
   name               = "${var.env}-${var.service}-${lookup(var.listener, "name")}"
   load_balancer_type = "application"
   internal           = false
-  subnets            = ["${split(",", var.subnets)}"]
+  subnets            = ["${var.subnets}"]
 
   tags {
     Name = "${var.env}-${var.service}-elb"

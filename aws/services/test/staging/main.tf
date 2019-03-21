@@ -14,7 +14,7 @@ module "app" {
   ami           = "${lookup(var.ec2,"ami")}"
   instance_type = "${lookup(var.ec2, "instance_type")}"
   count         = "${lookup(var.ec2,"count")}"
-  subnet_id     = "${element(split(",",module.vpc-main.subnet_ids),1)}"
+  subnet_id     = "${module.vpc-main.subnet_ids}"
 }
 
 module "app-lb" {
