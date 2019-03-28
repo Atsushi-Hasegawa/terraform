@@ -26,6 +26,8 @@ module "app-lb" {
   subnets           = "${module.vpc-main.subnet_ids}"
   target_group_name = "${lookup(var.lb, "target_group_name")}"
   vpc_id            = "${module.vpc-main.vpc_id}"
+  listener          = "${var.listener}"
+  health_check      = "${var.health_check}"
 }
 
 module "s3-cloudfront" {

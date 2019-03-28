@@ -1,13 +1,3 @@
-variable "service" {}
-variable "env" {}
-variable "ami" {}
-variable "instance_type" {}
-variable "count" {}
-
-variable "subnet_id" {
-  type = "list"
-}
-
 resource "aws_instance" "app" {
   count         = "${var.count}"
   ami           = "${var.ami}"

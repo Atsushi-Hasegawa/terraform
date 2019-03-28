@@ -1,19 +1,23 @@
 variable "listener" {
-  default = {
-    name              = "lb"
-    listener_port     = 80
-    listener_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
+  type = "map"
 }
 
 variable "health_check" {
-  default = {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 10
-    path                = "HTTP:80/"
-    interval            = 60
-  }
+  type = "map"
 }
+
+variable "env" {}
+variable "service" {}
+
+variable "subnets" {
+  type = "list"
+}
+
+variable "count" {}
+
+variable "instance_ids" {
+  type = "list"
+}
+
+variable "vpc_id" {}
+variable "target_group_name" {}
