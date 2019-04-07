@@ -40,7 +40,9 @@ variable "network" {
   default = {
     vpc_name              = "network"
     subnetwork_name       = "subnetwork"
-    subnetwork_cidr_range = "192.168.0.0/20"
+    subnetwork_cidr_range = "10.2.0.0/16"
+    second_range_name     = "second-subnetwork"
+    ip_cidr_range         = "192.168.0.0/20"
   }
 }
 
@@ -48,7 +50,7 @@ variable "compute_engine" {
   default = {
     count         = 1
     instance_name = "test-compute"
-    machine_type  = "n1-standard-2"
+    machine_type  = "n1-standard-1"
     image         = "ubuntu-os-cloud/ubuntu-1804-lts"
     size_gb       = 10
     type          = "pd-standard"
@@ -57,9 +59,16 @@ variable "compute_engine" {
 
 variable "container" {
   default = {
-    name           = "test-container"
-    node_pool_name = "test-container-np"
-    node_count     = 1
+    name                        = "test-container"
+    node_pool_name              = "test-container-np"
+    node_count                  = 1
+    remove_default_node         = true
+    enable_binary_authorization = true
+    enable_legacy_abac          = true
+    min_node_count              = 3
+    max_node_count              = 6
+    auto_repair                 = true
+    auto_upgrade                = false
   }
 }
 

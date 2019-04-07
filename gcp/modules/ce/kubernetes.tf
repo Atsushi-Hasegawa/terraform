@@ -1,7 +1,8 @@
 resource "google_container_cluster" "container-cluster" {
-  name               = "${lookup(var.container, "name")}"
-  zone               = "${var.zone}"
-  initial_node_count = "${lookup(var.container, "node_count")}"
+  name                     = "${lookup(var.container, "name")}"
+  zone                     = "${var.zone}"
+  initial_node_count       = "${lookup(var.container, "node_count")}"
+  remove_default_node_pool = "${lookup(var.container, "remove_default_node")}"
 
   addons_config {
     http_load_balancing {
@@ -9,12 +10,22 @@ resource "google_container_cluster" "container-cluster" {
     }
 
     horizontal_pod_autoscaling {
-      disabled = true
+      disabled = false
+    }
+
+    kubernetes_dashboard {
+      disabled = false
     }
   }
 
-  network    = "${lookup(var.network, "network")}"
-  subnetwork = "${lookup(var.network, "subnetwork")}"
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  network                     = "${lookup(var.network, "network")}"
+  subnetwork                  = "${lookup(var.network, "subnetwork")}"
+  enable_binary_authorization = "${lookup(var.container, "enable_binary_authorization")}"
+  enable_legacy_abac          = "${lookup(var.container, "enable_legacy_abac")}"
 }
 
 resource "google_container_node_pool" "container-np" {
@@ -25,5 +36,15 @@ resource "google_container_node_pool" "container-np" {
 
   node_config {
     machine_type = "${lookup(var.engine, "machine_type")}"
+  }
+
+  autoscaling {
+    min_node_count = "${lookup(var.container, "min_node_count")}"
+    max_node_count = "${lookup(var.container, "max_node_count")}"
+  }
+
+  management {
+    auto_repair  = "${lookup(var.container, "auto_repair")}"
+    auto_upgrade = "${lookup(var.container, "auto_upgrade")}"
   }
 }
