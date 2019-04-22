@@ -18,6 +18,7 @@ module "engine" {
   network   = "${module.network.network}"
 }
 
+/*
 module "storage" {
   source          = "../../../modules/storage"
   service         = "${var.project}"
@@ -31,4 +32,9 @@ module "memorystore" {
   env     = "staging"
   redis   = "${var.redis}"
   network = "${module.network.network}"
+}
+*/
+module "bigquery" {
+  source   = "../../../modules/bigquery"
+  bigquery = "${var.bigquery}"
 }

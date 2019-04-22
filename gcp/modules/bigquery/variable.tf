@@ -1,0 +1,3 @@
+variable "bigquery" {
+  type = "map"
+}

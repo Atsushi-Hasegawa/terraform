@@ -61,7 +61,7 @@ variable "container" {
   default = {
     name                        = "test-container"
     node_pool_name              = "test-container-np"
-    node_count                  = 1
+    node_count                  = 2
     remove_default_node         = true
     enable_binary_authorization = true
     enable_legacy_abac          = true
@@ -97,5 +97,15 @@ variable "redis" {
 
     //インタスタンスの予約ip範囲を設定(subnetworkのcidr範囲のため192.168.0.0/20以外)
     reserved_ip_range = "10.0.0.0/29"
+  }
+}
+
+variable "bigquery" {
+  type = "map"
+
+  default = {
+    dataset_id = "sample"
+    table_id   = "sample"
+    location   = "asia-northeast1"
   }
 }

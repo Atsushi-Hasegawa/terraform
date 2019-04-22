@@ -1,0 +1,8 @@
+[
+    {
+        "name": "foo",
+        "type": "FLOAT64",
+        "mode": "NULLABLE",
+        "description": "foo"
+    }
+]
