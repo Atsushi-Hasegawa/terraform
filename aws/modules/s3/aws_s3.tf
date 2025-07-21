@@ -1,12 +1,12 @@
 resource "aws_s3_bucket" "bucket" {
-  bucket        = "${var.bucket_name}"
-  acl           = "${var.bucket_acl}"
+  bucket        = var.bucket_name
+  acl           = var.bucket_acl
   force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "bucket-policy" {
-  bucket = "${aws_s3_bucket.bucket.id}"
-  policy = "${data.aws_iam_policy_document.s3_site_policy.json}"
+  bucket = aws_s3_bucket.bucket.id
+  policy = data.aws_iam_policy_document.s3_site_policy.json
 }
 
 data "aws_iam_policy_document" "s3_site_policy" {

@@ -1,16 +1,16 @@
 variable "subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "availability_zones" {
-  type = "list"
+  type = list(string)
 }
 
 resource "aws_subnet" "public_subnet" {
-  count             = "${length(var.subnets)}"
-  vpc_id            = "${aws_vpc.vpc-main.id}"
-  cidr_block        = "${element(var.subnets, count.index)}"
-  availability_zone = "${element(var.availability_zones, count.index)}"
+  count             = length(var.subnets)
+  vpc_id            = aws_vpc.vpc-main.id
+  cidr_block        = element(var.subnets, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags {
     Name = "${var.env}-${var.service}${format("%02d", count.index + 1)}"
@@ -18,5 +18,5 @@ resource "aws_subnet" "public_subnet" {
 }
 
 output "subnet_ids" {
-  value = "${aws_subnet.public_subnet.*.id}"
+  value = aws_subnet.public_subnet.*.id
 }

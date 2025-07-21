@@ -1,22 +1,22 @@
 variable "listener" {
-  type = "map"
+  type = map(string)
 }
 
 variable "health_check" {
-  type = "map"
+  type = map(string)
 }
 
 variable "env" {}
 variable "service" {}
 
 variable "subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "count" {}
 
 variable "instance_ids" {
-  type = "list"
+  type = list(string)
 }
 
 variable "vpc_id" {}

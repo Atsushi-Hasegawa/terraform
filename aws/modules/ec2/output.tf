@@ -1,7 +1,10 @@
 output "instance_ids" {
-  value = "${aws_instance.app.*.id}"
+  value = aws_instance.app.*.id
 }
 
-output "instance_count" {
-  value = "${aws_instance.app.count}"
+output "instance" {
+  value = aws_instance.app
+}
+output "elastic_ip" {
+  value = aws_eip.app
 }

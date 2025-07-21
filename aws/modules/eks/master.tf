@@ -1,6 +1,6 @@
 resource "aws_eks_cluster" "master-cluster" {
-  name     = "${lookup(var.eks, "name")}"
-  role_arn = "${aws_iam_role.master-role.arn}"
+  name     = lookup(var.eks, "name")
+  role_arn = aws_iam_role.master-role.arn
 
   vpc_config {
     security_group_ids = ["${aws_security_group.master-security-group.id}"]
