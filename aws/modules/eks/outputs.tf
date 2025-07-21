@@ -1,7 +1,7 @@
 output "kubeconfig" {
-  value = "${local.kubeconfig}"
+  value = local.kubeconfig
 }
 
 output "configmap" {
-  value = "${local.configmap}"
+  value = local.configmap
 }

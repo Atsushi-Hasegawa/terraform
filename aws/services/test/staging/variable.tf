@@ -3,13 +3,13 @@ variable "secret_key" {}
 variable "region" {}
 
 provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
-  region     = "${var.region}"
+  access_key = var.access_key
+  secret_key = var.secret_key
+  region     = var.region
 }
 
 variable "availability_zones" {
-  type = "list"
+  type = list(string)
 
   default = [
     "ap-northeast-1a",
@@ -23,6 +23,8 @@ variable "ec2" {
     ami           = "ami-f80e0596"
     instance_type = "t2.micro"
     count         = 1
+    encrypted     = true
+    device_name   = "web-ebs"
   }
 }
 
@@ -31,7 +33,7 @@ variable "vpc" {
 }
 
 variable "subnets" {
-  type = "list"
+  type = list(string)
 
   default = [
     "10.0.0.0/24",
@@ -75,7 +77,7 @@ variable "health_check" {
 }
 
 variable "autoscale" {
-  type = "map"
+  type = map(string)
 
   default = {
     min_size         = 1
@@ -86,7 +88,7 @@ variable "autoscale" {
 }
 
 variable "master-role" {
-  type = "map"
+  type = map(string)
 
   default = {
     name = "cluster-master-role"
@@ -94,7 +96,7 @@ variable "master-role" {
 }
 
 variable "master-security" {
-  type = "map"
+  type = map(string)
 
   default = {
     name       = "cluster-master-security"
@@ -107,7 +109,7 @@ variable "master-security" {
 }
 
 variable "master-security-rule" {
-  type = "map"
+  type = map(string)
 
   default = {
     from_port  = 443
@@ -119,7 +121,7 @@ variable "master-security-rule" {
 }
 
 variable "eks" {
-  type = "map"
+  type = map(string)
 
   default = {
     name          = "cluster-master"
@@ -129,7 +131,7 @@ variable "eks" {
 }
 
 variable "worker-role" {
-  type = "map"
+  type = map(string)
 
   default = {
     name = "worker-role"
@@ -137,7 +139,7 @@ variable "worker-role" {
 }
 
 variable "worker-security" {
-  type = "map"
+  type = map(string)
 
   default = {
     name       = "worker-security"
@@ -150,7 +152,7 @@ variable "worker-security" {
 }
 
 variable "worker-security-rule" {
-  type = "map"
+  type = map(string)
 
   default = {
     type      = "ingress"
@@ -161,7 +163,7 @@ variable "worker-security-rule" {
 }
 
 variable "worker-egress-security-rule" {
-  type = "map"
+  type = map(string)
 
   default = {
     type      = "ingress"
@@ -172,7 +174,7 @@ variable "worker-egress-security-rule" {
 }
 
 variable "worker-ingress-security-rule" {
-  type = "map"
+  type = map(string)
 
   default = {
     type      = "ingress"
