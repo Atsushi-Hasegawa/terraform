@@ -58,3 +58,10 @@ module "eks" {
   autoscale                    = var.autoscale
   eks                          = var.eks
 }
+
+module "fis" {
+  source = "../../../modules/fis"
+  project = "project"
+  environment = "staging"
+  fis = var.fis
+}

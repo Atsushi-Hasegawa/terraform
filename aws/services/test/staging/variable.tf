@@ -183,3 +183,12 @@ variable "worker-ingress-security-rule" {
     protocol  = "tcp"
   }
 }
+variable "fis" {
+  type = object({
+    ecs = list(object({
+      cluster_name   = string
+      service_name   = string
+      selection_mode = string
+    }))
+  })
+}
