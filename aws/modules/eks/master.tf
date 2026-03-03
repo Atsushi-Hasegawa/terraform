@@ -3,13 +3,13 @@ resource "aws_eks_cluster" "master-cluster" {
   role_arn = aws_iam_role.master-role.arn
 
   vpc_config {
-    security_group_ids = ["${aws_security_group.master-security-group.id}"]
-    subnet_ids         = ["${var.subnets}"]
+    security_group_ids = [aws_security_group.master-security-group.id]
+    subnet_ids         = var.subnets
   }
 
   depends_on = [
-    "aws_iam_role_policy_attachment.eks-cluster-policy",
-    "aws_iam_role_policy_attachment.eks-service-policy",
+    aws_iam_role_policy_attachment.eks-cluster-policy,
+    aws_iam_role_policy_attachment.eks-service-policy,
   ]
 }
 
@@ -36,7 +36,7 @@ users:
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
-      command: heptio-authenticator-aws
+      command: aws-iam-authenticator # updated from heptio
       args:
         - "token"
         - "-i"
