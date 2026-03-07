@@ -5,6 +5,7 @@ module "vpc-main" {
   vpc_cidr           = var.vpc
   subnets            = var.subnets
   availability_zones = var.availability_zones
+  container_port     = 80
 }
 
 module "app" {
@@ -30,31 +31,34 @@ module "app-lb" {
   vpc_id            = module.vpc-main.vpc_id
   listener          = var.listener
   health_check      = var.health_check
+  target_type       = "instance"
+  security_groups   = [module.vpc-main.alb_sg_id]
 }
 
-module "s3-cloudfront" {
-  source                           = "../../../modules/s3"
-  service                          = "project"
-  env                              = "staging"
-  bucket_name                      = lookup(var.storage, "name")
-  bucket_acl                       = lookup(var.storage, "acl")
-  cloudfront_origin_access_comment = lookup(var.storage, "cloudfront_comment")
+# ECS専用のALB (Fargate用)
+module "ecs-lb" {
+  source            = "../../../modules/elb"
+  service           = "project"
+  env               = "staging"
+  instance_ids      = []
+  count             = 0
+  subnets           = module.vpc-main.subnet_ids
+  target_group_name = "ecs-staging-tg"
+  vpc_id            = module.vpc-main.vpc_id
+  listener          = var.listener
+  health_check      = var.health_check
+  target_type       = "ip"
+  security_groups   = [module.vpc-main.alb_sg_id]
 }
 
-module "eks" {
-  source                       = "../../../modules/eks"
-  service                      = "project"
-  env                          = "staging"
-  subnets                      = module.vpc-main.subnet_ids
-  master-security              = var.master-security
-  master-security-rule         = var.master-security-rule
-  master-role                  = var.master-role
-  worker-role                  = var.worker-role
-  vpc                          = module.vpc-main.vpc_id
-  worker-security              = var.worker-security
-  worker-security-rule         = var.worker-security-rule
-  worker-egress-security-rule  = var.worker-egress-security-rule
-  worker-ingress-security-rule = var.worker-ingress-security-rule
-  autoscale                    = var.autoscale
-  eks                          = var.eks
+module "ecs-app" {
+  source            = "../../../modules/ecs"
+  service           = "project"
+  env               = "staging"
+  vpc_id            = module.vpc-main.vpc_id
+  subnets           = module.vpc-main.subnet_ids
+  security_group_id = module.vpc-main.ecs_sg_id
+  target_group_arn  = module.ecs-lb.target_group_arn
+  container_port    = 80
+  image             = "nginx:latest"
 }

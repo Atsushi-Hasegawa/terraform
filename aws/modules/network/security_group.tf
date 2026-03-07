@@ -133,3 +133,69 @@ resource "aws_vpc_security_group_egress_rule" "rds_egress_aws_services" {
   ip_protocol = "tcp"
 }
 
+# Security Group for the Application Load Balancer (ALB)
+resource "aws_security_group" "alb" {
+  name        = format("%s-%s-alb-sg", var.service, var.env)
+  vpc_id      = aws_vpc.vpc-main.id
+  description = "Security group for ALB allowing public access"
+
+  tags = {
+    Name        = format("%s-%s-alb-sg", var.service, var.env)
+    Environment = var.env
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "alb_ingress" {
+  security_group_id = aws_security_group.alb.id
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+  
+  tags = {
+    Name        = format("%s-%s-alb-ingress", var.service, var.env)
+    Environment = var.env
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "alb_egress" {
+  security_group_id = aws_security_group.alb.id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+# Security Group for ECS Service
+resource "aws_security_group" "ecs" {
+  name        = format("%s-%s-ecs-service-sg", var.service, var.env)
+  vpc_id      = aws_vpc.vpc-main.id
+  description = "Security group for ECS service allowing only ALB traffic"
+
+  tags = {
+    Name        = format("%s-%s-ecs-service-sg", var.service, var.env)
+    Environment = var.env
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ecs_ingress_from_alb" {
+  security_group_id = aws_security_group.ecs.id
+  from_port         = var.container_port
+  to_port           = var.container_port
+  ip_protocol       = "tcp"
+  referenced_security_group_id = aws_security_group.alb.id
+  
+  tags = {
+    Name        = format("%s-%s-ecs-ingress-from-alb", var.service, var.env)
+    Environment = var.env
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "ecs_egress" {
+  security_group_id = aws_security_group.ecs.id
+  ip_protocol       = "-1" # Allow all outbound traffic for pulling images and connecting to APIs
+  cidr_ipv4         = "0.0.0.0/0"
+  
+  tags = {
+    Name        = format("%s-%s-ecs-egress", var.service, var.env)
+    Environment = var.env
+  }
+}

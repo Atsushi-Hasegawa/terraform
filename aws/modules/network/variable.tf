@@ -11,6 +11,11 @@ variable "rds_port" {
   type    = number
   default = 3306
 }
+
+variable "container_port" {
+  type    = number
+  default = 80
+}
 variable "enable_databricks_federated" {
   type    = bool
   default = false

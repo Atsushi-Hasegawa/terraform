@@ -13,7 +13,14 @@ variable "subnets" {
   type = list(string)
 }
 
-variable "count" {}
+variable "security_groups" {
+  description = "List of security group IDs for the ALB"
+  type        = list(string)
+  default     = []
+}
+
+variable "count" {
+}
 
 variable "instance_ids" {
   type = list(string)
@@ -21,3 +28,9 @@ variable "instance_ids" {
 
 variable "vpc_id" {}
 variable "target_group_name" {}
+
+variable "target_type" {
+  description = "Target type for the ALB target group (instance or ip)"
+  type        = string
+  default     = "instance"
+}
