@@ -86,3 +86,9 @@ variable "subnet_ids" {
 variable "vpc_id" {
   type = string
 }
+
+variable "shared_account_ids" {
+  type        = list(string)
+  description = "List of AWS Account IDs to share the encrypted RDS snapshot with"
+  default     = []
+}
