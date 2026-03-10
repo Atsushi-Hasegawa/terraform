@@ -12,11 +12,24 @@ resource "aws_ecs_task_definition" "this" {
     {
       name  = "app"
       image = var.image
+      readonlyRootFilesystem = true
       portMappings = [
         {
           containerPort = var.container_port
           hostPort      = var.container_port
           protocol      = "tcp"
+        }
+      ]
+      mountPoints = [
+        {
+          sourceVolume  = "ssm-log"
+          containerPath = "/var/log/amazon"
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "ssm-lib"
+          containerPath = "/var/lib/amazon"
+          readOnly      = false
         }
       ]
       logConfiguration = {
@@ -46,6 +59,14 @@ resource "aws_ecs_task_definition" "this" {
       memoryReservation = 50
     }
   ])
+
+  volume {
+    name = "ssm-log"
+  }
+
+  volume {
+    name = "ssm-lib"
+  }
 }
 
 # ECS Service with ECS Exec enabled for troubleshooting
