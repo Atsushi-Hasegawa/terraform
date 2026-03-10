@@ -6,6 +6,15 @@ resource "aws_ecs_cluster" "this" {
     value = var.container_insights
   }
 
+  configuration {
+    execute_command_configuration {
+      logging = "OVERRIDE"
+      log_configuration {
+        cloud_watch_log_group_name = aws_cloudwatch_log_group.ecs_exec_audit_log.name
+      }
+    }
+  }
+
   tags = {
     Name        = var.cluster_name != null ? var.cluster_name : format("%s-%s-cluster", var.service, var.env)
     Environment = var.env

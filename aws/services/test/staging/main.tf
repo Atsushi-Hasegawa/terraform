@@ -52,13 +52,14 @@ module "ecs-lb" {
 }
 
 module "ecs-app" {
-  source            = "../../../modules/ecs"
-  service           = "project"
-  env               = "staging"
-  vpc_id            = module.vpc-main.vpc_id
-  subnets           = module.vpc-main.subnet_ids
-  security_group_id = module.vpc-main.ecs_sg_id
-  target_group_arn  = module.ecs-lb.target_group_arn
-  container_port    = 80
-  image             = "nginx:latest"
+  source                 = "../../../modules/ecs"
+  service                = "project"
+  env                    = "staging"
+  vpc_id                 = module.vpc-main.vpc_id
+  subnets                = module.vpc-main.subnet_ids
+  security_group_id      = module.vpc-main.ecs_sg_id
+  target_group_arn       = module.ecs-lb.target_group_arn
+  container_port         = 80
+  image                  = "nginx:latest"
+  enable_execute_command = true
 }

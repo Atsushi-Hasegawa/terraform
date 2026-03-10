@@ -76,7 +76,8 @@ resource "aws_ecs_service" "this" {
   task_definition        = aws_ecs_task_definition.this.arn
   desired_count          = 1
   launch_type            = "FARGATE"
-  enable_execute_command = true # ECS Execを有効化 (トラブルシューティング用)
+  enable_execute_command = var.enable_execute_command # ECS Execの有効化制御
+  propagate_tags         = "SERVICE"
 
   network_configuration {
     subnets          = var.subnets
@@ -95,6 +96,11 @@ resource "aws_ecs_service" "this" {
 
   lifecycle {
     ignore_changes = [desired_count]
+  }
+
+  tags = {
+    Name        = format("%s-%s-service", var.service, var.env)
+    Environment = var.env
   }
 }
 

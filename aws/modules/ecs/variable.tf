@@ -65,6 +65,12 @@ variable "memory" {
   default     = 512
 }
 
+variable "enable_execute_command" {
+  description = "Whether to enable ECS Exec for the service"
+  type        = bool
+  default     = false
+}
+
 variable "log_retention_in_days" {
   description = "Log retention period (days)"
   type        = number
