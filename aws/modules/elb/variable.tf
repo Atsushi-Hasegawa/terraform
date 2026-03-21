@@ -19,7 +19,7 @@ variable "security_groups" {
   default     = []
 }
 
-variable "count" {
+variable "instance_count" {
 }
 
 variable "instance_ids" {

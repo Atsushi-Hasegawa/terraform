@@ -13,9 +13,9 @@ resource "aws_kms_key" "rds" {
 
 data "aws_iam_policy_document" "rds_kms_policy" {
   statement {
-    sid    = "Enable IAM User Permissions"
-    effect = "Allow"
-    actions = ["kms:*"]
+    sid       = "Enable IAM User Permissions"
+    effect    = "Allow"
+    actions   = ["kms:*"]
     resources = ["*"]
     principals {
       type        = "AWS"

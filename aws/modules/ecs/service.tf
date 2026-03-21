@@ -10,8 +10,8 @@ resource "aws_ecs_task_definition" "this" {
 
   container_definitions = jsonencode([
     {
-      name  = "app"
-      image = var.image
+      name                   = "app"
+      image                  = var.image
       readonlyRootFilesystem = true
       portMappings = [
         {
@@ -35,9 +35,9 @@ resource "aws_ecs_task_definition" "this" {
       logConfiguration = {
         logDriver = "awsfirelens"
         options = {
-          Name   = "cloudwatch"
-          region = "ap-northeast-1" # 必要に応じて変数化
-          log_group_name = aws_cloudwatch_log_group.ecs_service_log.name
+          Name              = "cloudwatch"
+          region            = "ap-northeast-1" # 必要に応じて変数化
+          log_group_name    = aws_cloudwatch_log_group.ecs_service_log.name
           log_stream_prefix = "app"
         }
       }
@@ -102,12 +102,4 @@ resource "aws_ecs_service" "this" {
     Name        = format("%s-%s-service", var.service, var.env)
     Environment = var.env
   }
-}
-
-output "service_name" {
-  value = aws_ecs_service.this.name
-}
-
-output "task_definition_arn" {
-  value = aws_ecs_task_definition.this.arn
 }

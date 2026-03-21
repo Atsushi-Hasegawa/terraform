@@ -30,7 +30,7 @@ resource "aws_lb_target_group" "target-group" {
 }
 
 resource "aws_lb_target_group_attachment" "lb-target-group-attachment" {
-  count            = var.target_type == "instance" ? var.count : 0
+  count            = var.target_type == "instance" ? var.instance_count : 0
   target_group_arn = aws_lb_target_group.target-group.arn
   target_id        = element(var.instance_ids, count.index)
   port             = 80

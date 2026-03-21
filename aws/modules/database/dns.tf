@@ -19,6 +19,11 @@ resource "aws_route53_record" "reader" {
   records = [aws_rds_cluster.base.reader_endpoint]
 }
 
+data "dns_a_record_set" "instance_ips" {
+  count = var.enable_databricks_federated ? var.instance_count : 0
+  host  = aws_rds_cluster_instance.base[count.index].endpoint
+}
+
 data "dns_a_record_set" "federated_reader_ips" {
   count = var.enable_databricks_federated ? 1 : 0
   host  = aws_route53_record.reader.fqdn

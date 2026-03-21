@@ -14,6 +14,7 @@ locals {
   # Combine user-provided ARNs with the mandatory serverless role
   all_allowed_principals = distinct(concat(var.allowed_principal_arns, [local.databricks_serverless_role]))
 
-  reader_ip_list = var.enable_databricks_federated ? toset(data.dns_a_record_set.federated_reader_ips[0].addrs) : toset([])
+  # Collect all IPs from individual instance lookups to ensure all 10 nodes are utilized
+  reader_ip_list = var.enable_databricks_federated ? toset(flatten(data.dns_a_record_set.instance_ips[*].addrs)) : toset([])
 }
     

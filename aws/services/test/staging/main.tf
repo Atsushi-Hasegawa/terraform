@@ -25,7 +25,7 @@ module "app-lb" {
   service           = "project"
   env               = "staging"
   instance_ids      = module.app.instance_ids
-  count             = module.app.instance_count
+  instance_count    = module.app.instance_count
   subnets           = module.vpc-main.subnet_ids
   target_group_name = lookup(var.lb, "target_group_name")
   vpc_id            = module.vpc-main.vpc_id
@@ -41,7 +41,7 @@ module "ecs-lb" {
   service           = "project"
   env               = "staging"
   instance_ids      = []
-  count             = 0
+  instance_count    = 0
   subnets           = module.vpc-main.subnet_ids
   target_group_name = "ecs-staging-tg"
   vpc_id            = module.vpc-main.vpc_id
@@ -62,4 +62,11 @@ module "ecs-app" {
   container_port         = 80
   image                  = "nginx:latest"
   enable_execute_command = true
+}
+
+module "athena" {
+  source      = "../../../modules/athena"
+  project     = "project"
+  environment = "staging"
+  region      = var.region
 }

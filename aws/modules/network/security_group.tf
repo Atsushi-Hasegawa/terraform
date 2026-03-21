@@ -151,7 +151,7 @@ resource "aws_vpc_security_group_ingress_rule" "alb_ingress" {
   to_port           = 80
   ip_protocol       = "tcp"
   cidr_ipv4         = "0.0.0.0/0"
-  
+
   tags = {
     Name        = format("%s-%s-alb-ingress", var.service, var.env)
     Environment = var.env
@@ -177,12 +177,12 @@ resource "aws_security_group" "ecs" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "ecs_ingress_from_alb" {
-  security_group_id = aws_security_group.ecs.id
-  from_port         = var.container_port
-  to_port           = var.container_port
-  ip_protocol       = "tcp"
+  security_group_id            = aws_security_group.ecs.id
+  from_port                    = var.container_port
+  to_port                      = var.container_port
+  ip_protocol                  = "tcp"
   referenced_security_group_id = aws_security_group.alb.id
-  
+
   tags = {
     Name        = format("%s-%s-ecs-ingress-from-alb", var.service, var.env)
     Environment = var.env
@@ -193,7 +193,7 @@ resource "aws_vpc_security_group_egress_rule" "ecs_egress" {
   security_group_id = aws_security_group.ecs.id
   ip_protocol       = "-1" # Allow all outbound traffic for pulling images and connecting to APIs
   cidr_ipv4         = "0.0.0.0/0"
-  
+
   tags = {
     Name        = format("%s-%s-ecs-egress", var.service, var.env)
     Environment = var.env
