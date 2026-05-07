@@ -2,17 +2,17 @@ variable "project" {}
 variable "region" {}
 
 provider "google" {
-  credentials = "${file("../config/account.json")}"
-  project     = "${var.project}"
-  region      = "${var.region}"
+  credentials = file("../config/account.json")
+  project     = var.project
+  region      = var.region
 }
 
-variable zone {
+variable "zone" {
   default = "asia-northeast1-a"
 }
 
 variable "firewall" {
-  type = "list"
+  type = list(string)
 
   default = [
     {
@@ -101,7 +101,7 @@ variable "redis" {
 }
 
 variable "bigquery" {
-  type = "map"
+  type = map(string)
 
   default = {
     dataset_id = "sample"

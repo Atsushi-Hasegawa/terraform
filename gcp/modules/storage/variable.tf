@@ -2,9 +2,9 @@ variable "env" {}
 variable "service" {}
 
 variable "storage" {
-  type = "map"
+  type = map(string)
 }
 
 variable "service_account" {
-  type = "map"
+  type = map(string)
 }

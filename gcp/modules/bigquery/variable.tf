@@ -1,3 +1,3 @@
 variable "bigquery" {
-  type = "map"
+  type = map(string)
 }

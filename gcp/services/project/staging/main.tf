@@ -2,20 +2,20 @@ module "network" {
   source   = "../../../modules/network"
   service  = "project"
   env      = "staging"
-  firewall = "${var.firewall}"
-  region   = "${var.region}"
-  zone     = "${var.zone}"
-  network  = "${var.network}"
+  firewall = var.firewall
+  region   = var.region
+  zone     = var.zone
+  network  = var.network
 }
 
 module "engine" {
   source    = "../../../modules/ce"
   service   = "project"
   env       = "staging"
-  engine    = "${var.compute_engine}"
-  container = "${var.container}"
-  zone      = "${var.zone}"
-  network   = "${module.network.network}"
+  engine    = var.compute_engine
+  container = var.container
+  zone      = var.zone
+  network   = module.network.network
 }
 
 /*
@@ -36,5 +36,5 @@ module "memorystore" {
 */
 module "bigquery" {
   source   = "../../../modules/bigquery"
-  bigquery = "${var.bigquery}"
+  bigquery = var.bigquery
 }

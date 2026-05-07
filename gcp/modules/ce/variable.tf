@@ -1,16 +1,16 @@
 variable "zone" {}
 
 variable "engine" {
-  type = "map"
+  type = map(string)
 }
 
 variable "network" {
-  type = "map"
+  type = map(string)
 }
 
 variable "env" {}
 variable "service" {}
 
 variable "container" {
-  type = "map"
+  type = map(string)
 }

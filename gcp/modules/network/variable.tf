@@ -1,11 +1,11 @@
 variable "zone" {}
 
 variable "network" {
-  type = "map"
+  type = map(string)
 }
 
 variable "firewall" {
-  type = "list"
+  type = list(string)
 }
 
 variable "region" {}

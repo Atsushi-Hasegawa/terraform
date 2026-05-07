@@ -1,9 +1,9 @@
 variable "redis" {
-  type = "map"
+  type = map(string)
 }
 
 variable "network" {
-  type = "map"
+  type = map(string)
 }
 
 variable "env" {}
