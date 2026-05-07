@@ -1,81 +1,26 @@
-resource "aws_iam_role" "fis" {
-  name = format("%s%sFISRole", title(var.project), title(var.environment))
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "fis.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
+# ... (existing iam code) ...
 
-data "aws_iam_policy_document" "fis_ecs" {
+data "aws_iam_policy_document" "fis_ebs" {
   statement {
-    sid    = "FISECSActions"
+    sid    = "FISEBSActions"
     effect = "Allow"
     actions = [
-      "ecs:ListTasks",
-      "ecs:DescribeTasks",
-      "ecs:StopTask"
+      "ec2:PauseVolumeIO",
+      "ec2:ResumeVolumeIO"
     ]
-    resources = [
-      format("arn:aws:ecs:%s:%s:task/%s/*", local.region, local.account_id, split("/", var.cluster_arn)[1])
-    ]
+    resources = ["arn:aws:ec2:*:*:volume/*"]
   }
 }
 
-data "aws_iam_policy_document" "fis_ec2" {
-  statement {
-    sid    = "FISEC2Actions"
-    effect = "Allow"
-    actions = [
-      "ec2:RebootInstances",
-      "ec2:StopInstances",
-      "ec2:StartInstances",
-      "ec2:TerminateInstances",
-    ]
-    # Restrict to instances with specific project/environment tags
-    resources = ["arn:aws:ec2:*:*:instance/*"]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:ResourceTag/Project"
-      values   = [var.project]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "aws:ResourceTag/Environment"
-      values   = [var.environment]
-    }
-  }
-
-  statement {
-    sid    = "FISEC2Describe"
-    effect = "Allow"
-    actions = [
-      "ec2:DescribeInstances"
-    ]
-    resources = ["*"] # Describe typically requires *
-  }
-}
-
+# (Add this to the combined policy document)
 data "aws_iam_policy_document" "fis_combined" {
   source_policy_documents = [
     data.aws_iam_policy_document.fis_ecs.json,
-    data.aws_iam_policy_document.fis_ec2.json
+    data.aws_iam_policy_document.fis_ec2.json,
+    data.aws_iam_policy_document.fis_rds.json,
+    data.aws_iam_policy_document.fis_ssm.json,
+    data.aws_iam_policy_document.fis_network.json,
+    data.aws_iam_policy_document.fis_control_plane.json,
+    data.aws_iam_policy_document.fis_ebs.json # Added
   ]
-}
-
-resource "aws_iam_policy" "fis" {
-  name   = format("%s%sFISPolicy", title(var.project), title(var.environment))
-  policy = data.aws_iam_policy_document.fis_combined.json
-}
-
-resource "aws_iam_role_policy_attachment" "fis" {
-  role       = aws_iam_role.fis.name
-  policy_arn = aws_iam_policy.fis.arn
 }

@@ -70,3 +70,62 @@ module "athena" {
   environment = "staging"
   region      = var.region
 }
+
+module "fis" {
+  source      = "../../../modules/fis"
+  project     = "project"
+  environment = "staging"
+  cluster_arn = module.ecs-app.cluster_arn
+  
+  fis = {
+    # 1台だけECSタスクを落とすSPOF試験
+    ecs = [{
+      cluster_name   = split("/", module.ecs-app.cluster_arn)[1]
+      service_name   = module.ecs-app.service_name
+      selection_mode = "COUNT(1)"
+    }]
+
+    # EC2の停止試験
+    ec2 = [{
+      instance_ids   = module.app.instance_ids
+      selection_mode = "COUNT(1)"
+    }]
+
+    # RDS試験（必要に応じて追加）
+    rds = []
+
+    # ネットワーク不安定化試験 (Packet Loss 5%, Jitter 10ms)
+    network_advanced = [{
+      instance_ids   = module.app.instance_ids
+      selection_mode = "ALL"
+      duration       = "PT5M"
+      loss           = "5%"
+      jitter         = "10ms"
+      dns_fault      = "delay"
+    }]
+
+    # API Error Injection (ECSのDescribeTasksを50%の確率でエラーにする)
+    api_fault = [{
+      service        = "ecs"
+      operation_name = "DescribeTasks"
+      error_code     = "Throttling"
+      percentage     = 50
+      duration       = "PT10M"
+    }]
+
+    # 観測障害 (CloudWatchへの通信遮断)
+    observability_disruption = [{
+      instance_ids   = module.app.instance_ids
+      selection_mode = "ALL"
+      duration       = "PT5M"
+      target_service = "cloudwatch"
+    }]
+
+    # 連鎖障害シナリオ
+    chained_scenarios = [{
+      name         = "cascading-failure"
+      instance_ids = module.app.instance_ids
+      duration     = "PT15M"
+    }]
+  }
+}
