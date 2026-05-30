@@ -81,18 +81,49 @@ valkey-cli -h <endpoint> -p 6379
 SET my_lock "locked" NX EX 30
 
 # 2. ランキング (Sorted Set)
+# 2. ランキング (Sorted Set)
 # ユーザー "user1" にスコア 100 を設定
 ZADD game_ranking 100 "user1"
-# 上位3名を取得
+# 上位3名を取得 (降順)
 ZREVRANGE game_ranking 0 2 WITHSCORES
 
 # 3. ユーザープロファイル (Hash)
 HSET user:1001 name "Taro" age 25 email "taro@example.com"
+# 特定のフィールドを取得
+HGET user:1001 email
+# 全フィールドを取得
 HGETALL user:1001
 
-# 4. 統計情報の確認
-INFO stats
-INFO memory
+### データ取得とスキャン (運用・調査用)
+大量のデータがある環境で `KEYS *` を使うと、シングルスレッドの Valkey/Redis ではサービスが停止する恐れがあるため、`SCAN` を使用します。
+
+```bash
+# 安全なキーの検索 (10件ずつカーソルを回して取得)
+SCAN 0 MATCH user:* COUNT 10
+
+# Hash内のフィールドを走査
+HSCAN user:1001 0 MATCH e*
+```
+
+### クラスター環境での操作
+Valkey Cluster では、データが 16384 個のハッシュスロットに分割して保存されています。
+
+```bash
+# クラスターモードで接続 (-c オプションが必須)
+# これにより、キーの所在ノードが異なる場合に自動でリダイレクトされる
+valkey-cli -c -h <cluster-endpoint> -p 6379
+
+# どのノードにどのスロットが割り当てられているか確認
+CLUSTER NODES
+
+# 特定のキーがどのスロット・どのノードにあるか特定する
+# 1. キーのスロット番号を算出
+CLUSTER KEYSLOT "user:1001"
+# 2. そのスロットを担当するノードを特定し、直接接続して取得する場合 (リダイレクトなし)
+GET "user:1001"
+
+# クラスター全体から特定のパターンに一致するキーを探す (工夫が必要)
+# 各ノードに対して SCAN を個別に実行する必要があるため、スクリプト等で全ノードを回すのが一般的
 ```
 
 ---
