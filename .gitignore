@@ -1,7 +1,9 @@
-aws/services/test/staging/.terraform
-aws/services/test/staging/terraform.tfstate
-aws/services/test/staging/terraform.tfstate.backup
-gcp/services/project/staging/.terraform
-gcp/services/project/config
-gcp/services/project/staging/terraform.tfstate
-gcp/services/project/staging/terraform.tfstate.backup
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform.lock.hcl
+
+# OS files
+.DS_Store
