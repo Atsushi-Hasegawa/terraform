@@ -47,7 +47,57 @@ Valkey（Redisフォーク）を導入・運用する際の重要ポイント。
 
 ---
 
-## 3. 運用上の注意 (Git Management)
+## 3. CLI 操作リファレンス
+
+### Terraform 基本操作
+各環境（`common`, `staging`）のディレクトリに移動して実行します。
+
+```bash
+# 初期化 (バイナリのダウンロード)
+terraform init
+
+# 実行計画の確認 (変更内容のレビュー)
+terraform plan
+
+# 反映
+terraform apply
+
+# 特定のリソースの状態を確認
+terraform state show module.app.aws_instance.this[0]
+
+# 基盤(common)のタグ情報を再スキャンしてDIを更新する場合
+terraform plan -refresh-only
+```
+
+### Valkey 操作 (valkey-cli)
+Redis と互換性がありますが、ツール名は `valkey-cli` を使用します。
+
+```bash
+# 接続
+valkey-cli -h <endpoint> -p 6379
+
+# 1. 分散ロック (アトミックなセットと期限設定)
+# キーが存在しない(NX)場合のみ、30秒間(EX 30)セットする
+SET my_lock "locked" NX EX 30
+
+# 2. ランキング (Sorted Set)
+# ユーザー "user1" にスコア 100 を設定
+ZADD game_ranking 100 "user1"
+# 上位3名を取得
+ZREVRANGE game_ranking 0 2 WITHSCORES
+
+# 3. ユーザープロファイル (Hash)
+HSET user:1001 name "Taro" age 25 email "taro@example.com"
+HGETALL user:1001
+
+# 4. 統計情報の確認
+INFO stats
+INFO memory
+```
+
+---
+
+## 4. 運用上の注意 (Git Management)
 
 - **巨大ファイルの除外**: `.terraform/` ディレクトリには数・サイズ共に膨大なバイナリが含まれるため、必ず `.gitignore` で除外する。
 - **Stateの保護**: `*.tfstate` ファイルには機密情報が含まれる可能性があるため、リモートバックエンド（S3等）の使用を推奨。
