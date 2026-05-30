@@ -9,7 +9,7 @@ resource "aws_security_group" "master-security-group" {
     cidr_blocks = ["${lookup(var.master-security, "cidr_block")}"]
   }
 
-  tags {
+  tags = {
     Name = lookup(var.master-security, "tag")
   }
 }

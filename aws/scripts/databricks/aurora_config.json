@@ -1,0 +1,46 @@
+{
+  "aurora_connections": {
+    "staging_reader": {
+      "host": "project-staging-r.example.com",
+      "secret_scope": "aurora-scope",
+      "user_key": "username",
+      "pwd_key": "password"
+    }
+  },
+  "load_plans": {
+    "default_load": {
+      "all_users_df": {
+        "type": "sharded",
+        "database_prefix": "user_db_",
+        "table_name": "users",
+        "shard_ids": ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010"],
+        "partition_col": "user_id",
+        "num_partitions": 4,
+        "max_concurrent_shards": 3
+      },
+      "config_df": {
+        "type": "single",
+        "database": "common_db",
+        "table_name": "app_config",
+        "partition_col": null,
+        "num_partitions": null
+      },
+      "product_catalog": {
+        "type": "single",
+        "database": "catalog_db",
+        "table_name": "products",
+        "partition_col": "product_id",
+        "num_partitions": 8
+      }
+    },
+    "another_load_plan": {
+      "orders_df": {
+        "type": "single",
+        "database": "sales_db",
+        "table_name": "orders",
+        "partition_col": "order_id",
+        "num_partitions": 10
+      }
+    }
+  }
+}

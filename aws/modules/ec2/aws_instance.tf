@@ -3,17 +3,20 @@ resource "aws_instance" "app" {
   ami           = var.ami
   instance_type = var.instance_type
   subnet_id     = var.subnet_id[count.index]
+  
+  # Ensure no public IP is associated
+  associate_public_ip_address = false
+
   ebs_block_device {
     encrypted   = var.encrypted
     device_name = var.device_name
   }
+
+  vpc_security_group_ids = var.security_group_ids
 
   tags = {
     Name = "${format("web%02d", count.index + 1)}"
   }
 }
 
-resource "aws_eip" "app" {
-  count    = length(aws_instance.app)
-  instance = element(aws_instance.app.*.id, count.index)
-}
+# aws_eip.app is removed as we access via ALB only
