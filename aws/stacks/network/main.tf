@@ -1,3 +1,7 @@
+provider "aws" {
+  region = var.region
+}
+
 module "vpc" {
   source             = "../../modules/network"
   service            = var.service
@@ -8,10 +12,15 @@ module "vpc" {
   container_port     = 80
 }
 
-# 共通タグやDI用のタグをここで制御
+# 検索用の特定タグをVPCに付与
 resource "aws_ec2_tag" "vpc_tag" {
   resource_id = module.vpc.vpc_id
   key         = "FoundationLayer"
   value       = "true"
 }
 
+resource "aws_ec2_tag" "env_tag" {
+  resource_id = module.vpc.vpc_id
+  key         = "Environment"
+  value       = var.env
+}
