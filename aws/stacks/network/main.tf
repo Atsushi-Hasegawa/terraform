@@ -1,10 +1,3 @@
-variable "region" {}
-variable "service" {}
-variable "env" {}
-variable "vpc_cidr" {}
-variable "subnets" { type = list(string) }
-variable "availability_zones" { type = list(string) }
-
 module "vpc" {
   source             = "../../modules/network"
   service            = var.service

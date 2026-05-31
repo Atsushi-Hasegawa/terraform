@@ -1,11 +1,3 @@
-variable "project" { type = map(string) }
-variable "ec2_config" { type = any }
-variable "lb_config" { type = any }
-variable "vpc_id" {}
-variable "subnet_ids" { type = list(string) }
-variable "app_sg_id" {}
-variable "alb_sg_id" {}
-
 module "app" {
   source             = "../../modules/ec2"
   service            = var.project.service
