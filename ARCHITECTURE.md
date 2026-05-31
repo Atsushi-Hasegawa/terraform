@@ -4,17 +4,24 @@
 
 ## 1. Terraform 構成設計 (AWS)
 
-### 階層構造と役割分離 (SoC)
-サービスレイヤーを「基盤層 (Foundation)」と「アプリケーション層 (Application)」に分離し、ライフサイクルを独立させています。
+### 階層構造と役割分離 (Environment & Stack)
+大規模なインフラを安全に管理するため、設計図（Stacks）と実体（Environments）を分離しています。
 
-- **`aws/services/common`**: 基盤層。VPC、サブネット、共通セキュリティグループなど、変更頻度が低く、プロジェクト全体で共有されるリソースを管理。
-- **`aws/services/staging`**: アプリケーション層。EC2、ECS、ALB、分析基盤など、環境固有のリソースを管理。
+- **`aws/modules/`**: 原子的な単一リソースの定義。
+- **`aws/stacks/`**: 複数のモジュールを組み合わせた「機能単位の設計図」。依存関係（VPC ID等）は変数として受け取る DI 設計。
+- **`aws/environments/`**: 各環境（staging, production 等）の具体的な定義。Stacks にパラメータを注入してリソースを実体化する。
+
+| レイヤー | ディレクトリ | 主な役割 |
+| :--- | :--- | :--- |
+| Foundation | `environments/common` | VPC, 基盤セキュリティグループの作成 |
+| Application | `environments/staging` | 基盤情報を DI で受け取り、アプリスタックを実体化 |
 
 ### 依存性の注入 (Dependency Injection)
-レイヤー間の結合を疎にするため、直接的なモジュール参照ではなく **AWS Data Sources** を利用した DI を採用しています。
+レイヤー間およびスタック間の結合を疎にするため、Data Sources を利用した DI を採用しています。
 
-- **手法**: `common` で作成したリソースに特定のタグ（例: `FoundationLayer = "true"`) を付与し、`staging` 側でそのタグを元に検索・取得。
-- **メリット**: 基盤側のコード変更がアプリ側に即時波及するリスクを抑え、安全なリリースサイクルを実現。
+- **`stacks` の設計**: `vpc_id` や `subnet_ids` をハードコードせず、必ず `variable` で受け取るように設計。
+- **DI の流れ**: `environments` 側で Data Source を用いて既存リソースを検索し、その ID を `stacks` モジュールに注入する。
+
 
 ### ファイル構成の標準化
 各ディレクトリは以下の役割に基づいて 4 つのファイルに分割されています。

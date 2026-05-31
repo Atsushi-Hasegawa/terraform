@@ -5,3 +5,7 @@ output "target_group_arn" {
 output "lb_dns_name" {
   value = aws_lb.app-lb.dns_name
 }
+
+output "vpc_id" {
+  value = aws_lb_target_group.target-group.vpc_id
+}

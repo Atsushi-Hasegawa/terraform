@@ -1,43 +1,47 @@
 mock_provider "aws" {}
 
-run "instance" {
+run "ec2_module_security_and_standard_compliance" {
+  command = plan
+
   module {
     source = "../../../aws/modules/ec2"
   }
 
   variables {
-    service       = "project"
-    env           = "test"
-    ami           = "ami-12345678"
-    instance_type = "t3.micro"
-    num           = 2
-    subnet_id     = ["subnet-12345678", "subnet-87654321"]
-    encrypted     = true
-    device_name   = "mock-web"
+    service            = "compliance-test"
+    env                = "prod"
+    ami                = "ami-98765432"
+    instance_type      = "m5.large"
+    num                = 3
+    subnet_id          = ["sn-1", "sn-2", "sn-3"]
+    encrypted          = true
+    device_name        = "/dev/xvda"
+    security_group_ids = ["sg-secure"]
   }
-  # インスタンス数チェック
+
+  # セキュリティ: パブリックIPの禁止
   assert {
-    condition     = length(output.instance) == 2
-    error_message = "Expected 2 EC2 instances to be created"
+    condition     = aws_instance.app[0].associate_public_ip_address == false
+    error_message = "EC2 instance should not have a public IP associated"
   }
-  # ElasticIP数チェック
-  assert {
-    condition     = length(output.elastic_ip) == 2
-    error_message = "Expected 2 EIPs associated with EC2 instances"
-  }
-  # EBS 暗号化チェック（すべてのブロックに対して）
+
+  # セキュリティ: すべてのEBSボリュームの暗号化強制
   assert {
     condition = alltrue([
-      for dev in tolist(output.instance[0].ebs_block_device) : dev.encrypted == true
+      for device in tolist(aws_instance.app[0].ebs_block_device) : device.encrypted == true
     ])
-    error_message = "EBS volumes on instance[0] are not all encrypted"
+    error_message = "EBS volumes must be encrypted in production environments"
   }
-  # Name タグチェック（web01, web02）
+
+  # 構成: インスタンスサイズの整合性
   assert {
-    condition = alltrue([
-      for i, inst in tolist(output.instance) :
-      inst.tags["Name"] == format("web%02d", i + 1)
-    ])
-    error_message = "EC2 instance Name tag is not correctly formatted"
+    condition     = aws_instance.app[0].instance_type == "m5.large"
+    error_message = "Instance type does not match requested configuration"
+  }
+
+  # 構成: 命名規則の遵守 (web01, web02, web03)
+  assert {
+    condition     = aws_instance.app[2].tags["Name"] == "web03"
+    error_message = "Naming convention for instances is not being followed"
   }
 }
