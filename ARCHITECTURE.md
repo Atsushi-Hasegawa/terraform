@@ -126,6 +126,43 @@ GET "user:1001"
 # 各ノードに対して SCAN を個別に実行する必要があるため、スクリプト等で全ノードを回すのが一般的
 ```
 
+### MySQL 操作と概念 (RDBMS)
+アプリケーションの永続データ管理に使用します。
+
+#### 1. コア概念
+- **ACID特性**: Atomicity（原子性）、Consistency（一貫性）、Isolation（独立性）、Durability（永続性）を保証。
+- **インデックス (B-Tree)**: 高速な検索のために不可欠。ただし、過剰なインデックスは書き込み性能を低下させる。
+- **デッドロック**: 複数のトランザクションが互いにロックを待ち続ける状態。発生時はMySQLが自動検知して一方をロールバックする。
+
+#### 2. 運用・調査用クエリ
+
+```sql
+-- 1. 接続状況の確認 (誰が重い処理をしているか)
+SHOW FULL PROCESSLIST;
+
+-- 2. 実行計画の確認 (インデックスが効いているか)
+-- 検索時に全件走査(type: ALL)になっていないかチェック
+EXPLAIN SELECT * FROM users WHERE email = 'test@example.com';
+
+-- 3. インデックスの確認
+SHOW INDEX FROM users;
+
+-- 4. トランザクションの基本操作
+START TRANSACTION;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT; -- または ROLLBACK;
+
+-- 5. 現在のロック状況を確認 (トラブルシューティング時)
+SELECT * FROM information_schema.innodb_locks;
+SELECT * FROM information_schema.innodb_trx;
+```
+
+#### 3. 運用のベストプラクティス
+- **SELECT * を避ける**: 必要なカラムだけを取得することで、メモリ使用量とネットワーク転送量を削減する。
+- **大規模な削除・更新は分割する**: 大量の行を一度に DELETE/UPDATE すると、長時間ロックがかかりサービス停止の原因になるため、LIMIT を使って小分けにする。
+- **バックアップ**: Terraform (RDS等) のスナップショット機能を活用し、自動バックアップと復元（Point-in-Time Recovery）を常に有効にする。
+
 ---
 
 ## 4. 運用上の注意 (Git Management)
