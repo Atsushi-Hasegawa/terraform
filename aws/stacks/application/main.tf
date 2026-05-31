@@ -26,4 +26,3 @@ module "app-lb" {
   security_groups   = [var.alb_sg_id]
 }
 
-output "alb_dns_name" { value = module.app-lb.lb_dns_name }

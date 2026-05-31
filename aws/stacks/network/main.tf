@@ -15,7 +15,3 @@ resource "aws_ec2_tag" "vpc_tag" {
   value       = "true"
 }
 
-output "vpc_id" { value = module.vpc.vpc_id }
-output "subnet_ids" { value = module.vpc.subnet_ids }
-output "app_sg_id" { value = module.vpc.ecs_sg_id }
-output "alb_sg_id" { value = module.vpc.alb_sg_id }
