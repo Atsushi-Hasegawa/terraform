@@ -19,15 +19,29 @@ data "aws_subnets" "public" {
 
 data "aws_security_group" "alb" {
   vpc_id = data.aws_vpc.common.id
-  filter { name = "group-name", values = ["*-alb-sg"] }
+  filter {
+    name   = "group-name"
+    values = ["*-alb-sg"]
+  }
 }
 
 data "aws_security_group" "app" {
   vpc_id = data.aws_vpc.common.id
-  filter { name = "group-name", values = ["*-ecs-sg"] }
+  filter {
+    name   = "group-name"
+    values = ["*-ecs-sg"]
+  }
 }
 
 # --- Resource Creation ---
+
+# 1. Backup Infrastructure (High Resilience)
+module "backup" {
+  source     = "../../modules/backup"
+  env        = var.project.env
+  vault_name = "${var.project.service}-${var.project.env}-vault"
+}
+
 module "app" {
   source             = "../../modules/ec2"
   service            = var.project.service
@@ -56,7 +70,6 @@ module "app-lb" {
   security_groups   = [data.aws_security_group.alb.id]
 }
 
-# 以前 environments にあった athena などの追加モジュールもスタックに統合可能
 module "athena" {
   source      = "../../modules/athena"
   project     = var.project.service

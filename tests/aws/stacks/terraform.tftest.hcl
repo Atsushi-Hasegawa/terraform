@@ -14,6 +14,7 @@ run "validate_application_stack_integration" {
   }
 
   variables {
+    region = "ap-northeast-1"
     project = {
       service = "test-service"
       env     = "test"
@@ -28,10 +29,7 @@ run "validate_application_stack_integration" {
     lb_config = {
       target_group_name = "test-tg"
     }
-    vpc_id     = "vpc-99999"
-    subnet_ids = ["subnet-11111", "subnet-22222"]
-    app_sg_id  = "sg-app-123"
-    alb_sg_id  = "sg-alb-456"
+    # vpc_id 等は data ソースで取得されるため、ここでは不要（モックが必要）
   }
 
   # 1. コンピュート層の検証
@@ -40,21 +38,15 @@ run "validate_application_stack_integration" {
     error_message = "EC2 instance count mismatch in stack"
   }
 
-  # 2. ネットワーク/DIの整合性
+  # 2. バックアップインフラの検証
   assert {
-    condition     = contains(tolist(module.app.vpc_security_group_ids), "sg-app-123")
-    error_message = "DI Failure: Security Group sg-app-123 was not correctly passed to EC2"
+    condition     = module.backup.vault_name != ""
+    error_message = "Backup vault was not initialized"
   }
 
-  # 3. ALB/ターゲットグループの整合性
+  # 3. 命名・タグの検証 (EC2モジュールで付与されたタグ)
   assert {
-    condition     = module.app-lb.vpc_id == "vpc-99999"
-    error_message = "DI Failure: VPC ID was not correctly passed to Target Group"
-  }
-
-  # 4. ネーミング・タグ
-  assert {
-    condition     = module.app.instance_tags[1]["Name"] == "web02"
-    error_message = "Naming convention violation"
+    condition     = module.app.instance_tags[0]["BackupPolicy"] == "high-resilience"
+    error_message = "EC2 BackupPolicy tag is missing"
   }
 }

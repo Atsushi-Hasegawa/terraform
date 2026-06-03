@@ -20,12 +20,13 @@ resource "aws_rds_cluster" "base" {
   db_subnet_group_name                = aws_db_subnet_group.default.name
   skip_final_snapshot                 = false
   final_snapshot_identifier           = format("%s-%s-final-snapshot", var.environment, var.database.name)
-  deletion_protection                 = true
+  deletion_protection                 = var.deletion_protection
+  delete_automated_backups            = var.delete_automated_backups
   storage_encrypted                   = true
   kms_key_id                          = aws_kms_key.rds.arn
   enabled_cloudwatch_logs_exports     = ["error", "general", "slowquery", "audit"]
   preferred_backup_window             = "03:00-04:00"
-  backup_retention_period             = 35
+  backup_retention_period             = var.backup_retention_period
   copy_tags_to_snapshot               = true
   iam_database_authentication_enabled = true
 

@@ -23,3 +23,11 @@ aws/
 スタック間は Data Source を用いて疎結合に繋ぎます。
 - **Tag-based Search**: `common` 基盤には `FoundationLayer = "true"` などのタグを付与し、他のスタックからそのタグをキーに検索・取得する。
 - **Variable Injection**: スタック自体は `vpc_id` などを外から受け取れるように設計し、`environments` の設定（または実行時の探索結果）を注入する。
+
+## Backup & Recovery Resilience (3-2-1-1)
+新しいスタック（特にデータストア）を設計する際は、以下の基準を遵守すること。
+
+1. **3-2-1-1 Rule**: 3コピー、2媒体、1オフサイト、1オフライン（論理的隔離）。
+2. **Immutable Backup**: S3 Object Lock やバックアップ専用 Vault を活用し、削除不能なバックアップを構成する。
+3. **Network Isolation**: バックアップへのアクセスは専用の VPC Endpoint や分離されたネットワーク経由で行う。
+4. **EDR/Command Guard**: OSレベルでは `vssadmin` 等の無効化を考慮し、バックアップの破壊を防ぐ。

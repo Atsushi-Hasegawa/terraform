@@ -15,7 +15,8 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = var.security_group_ids
 
   tags = {
-    Name = "${format("web%02d", count.index + 1)}"
+    Name         = "${format("web%02d", count.index + 1)}"
+    BackupPolicy = "high-resilience"
   }
 }
 

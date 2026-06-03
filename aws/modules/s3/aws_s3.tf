@@ -1,10 +1,33 @@
 resource "aws_s3_bucket" "bucket" {
-  bucket        = var.bucket_name
-  force_destroy = true
+  bucket              = var.bucket_name
+  force_destroy       = var.force_destroy
+  object_lock_enabled = var.enable_object_lock # バケット作成時に必須
 
   tags = {
     Name        = var.bucket_name
     Environment = var.env
+  }
+}
+
+# 1. バージョニングの有効化
+resource "aws_s3_bucket_versioning" "versioning" {
+  count  = var.enable_versioning ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# 2. オブジェクトロック（不変性）の構成
+resource "aws_s3_bucket_object_lock_configuration" "object_lock" {
+  count  = var.enable_object_lock ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    default_retention {
+      mode = "COMPLIANCE" # 管理者でも削除不能
+      days = var.retention_days
+    }
   }
 }
 
