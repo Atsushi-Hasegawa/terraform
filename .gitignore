@@ -7,3 +7,10 @@
 
 # OS files
 .DS_Store
+
+# Security scan results
+results.json
+tfplan.*
+
+# Terraform lock files
+.terraform.tfstate.lock.info
