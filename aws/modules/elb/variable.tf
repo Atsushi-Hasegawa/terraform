@@ -34,3 +34,4 @@ variable "target_type" {
   type        = string
   default     = "instance"
 }
+variable "certificate_arn" { type = string }

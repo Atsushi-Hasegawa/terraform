@@ -13,6 +13,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
   }
 
   enabled             = true
+  web_acl_id          = var.web_acl_id
   retain_on_delete    = true
   is_ipv6_enabled     = true
   price_class         = "PriceClass_200"
@@ -46,5 +47,10 @@ resource "aws_cloudfront_distribution" "cloudfront" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Project     = "terraform-1"
+    Environment = "staging"
   }
 }

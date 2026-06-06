@@ -68,6 +68,7 @@ module "app-lb" {
   health_check      = { healthy_threshold = 2, unhealthy_threshold = 2, timeout = 10, path = "HTTP:80/", interval = 60 }
   target_type       = "instance"
   security_groups   = [data.aws_security_group.alb.id]
+  certificate_arn   = var.certificate_arn # 追加
 }
 
 module "athena" {

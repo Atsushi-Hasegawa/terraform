@@ -4,12 +4,23 @@ resource "aws_instance" "app" {
   instance_type = var.instance_type
   subnet_id     = var.subnet_id[count.index]
   
-  # Ensure no public IP is associated
+  # 1. ネットワーク露出の制限
   associate_public_ip_address = false
 
+  # 2. ストレージの暗号化 (Ransomware & Data protection)
+  root_block_device {
+    encrypted = true
+  }
+
   ebs_block_device {
-    encrypted   = var.encrypted
+    encrypted   = true # 明示的にtrueを強制
     device_name = var.device_name
+  }
+
+  # 3. IMDS v2 の必須化 (Credential protection)
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 
   vpc_security_group_ids = var.security_group_ids
@@ -17,6 +28,8 @@ resource "aws_instance" "app" {
   tags = {
     Name         = "${format("web%02d", count.index + 1)}"
     BackupPolicy = "high-resilience"
+    Project      = "terraform-1"    # 必須タグの追加
+    Environment  = "staging"        # 必須タグの追加
   }
 }
 

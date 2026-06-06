@@ -1,10 +1,36 @@
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+  tags = {
+    Project     = "terraform-1"
+    Environment = "staging"
+  }
+}
+
 resource "aws_eks_cluster" "master-cluster" {
   name     = lookup(var.eks, "name")
   role_arn = aws_iam_role.master-role.arn
 
+  # 1. ネットワーク境界の防御 (CRITICAL対策)
   vpc_config {
-    security_group_ids = [aws_security_group.master-security-group.id]
-    subnet_ids         = var.subnets
+    security_group_ids      = [aws_security_group.master-security-group.id]
+    subnet_ids              = var.subnets
+    endpoint_public_access  = false # パブリックアクセスを完全に遮断
+    endpoint_private_access = true
+  }
+
+  # 2. シークレットの保護 (HIGH対策)
+  encryption_config {
+    resources = ["secrets"]
+    provider {
+      key_arn = aws_kms_key.eks.arn
+    }
+  }
+
+  tags = {
+    Project     = "terraform-1"
+    Environment = "staging"
   }
 
   depends_on = [

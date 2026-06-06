@@ -14,8 +14,15 @@ resource "aws_launch_template" "launch" {
   instance_type = lookup(var.eks, "instance_type")
   key_name      = lookup(var.eks, "key_name")
 
+  # 1. IMDS v2 の必須化 (Credential protection)
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
+
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = false # セキュリティ向上のためパブリックIPを無効化
     security_groups             = [aws_security_group.worker-security-group.id]
   }
 
@@ -24,6 +31,14 @@ resource "aws_launch_template" "launch" {
   }
 
   user_data = base64encode(local.worker-userdata)
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Project     = "terraform-1"
+      Environment = "staging"
+    }
+  }
 
   lifecycle {
     create_before_destroy = true

@@ -26,3 +26,4 @@ variable "force_destroy" {
   type        = bool
   default     = false
 }
+variable "web_acl_id" { default = null }

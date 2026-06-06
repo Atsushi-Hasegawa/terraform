@@ -1,3 +1,13 @@
+resource "aws_kms_key" "s3" {
+  description             = "KMS key for S3 bucket encryption"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+  tags = {
+    Project     = "terraform-1"
+    Environment = "staging"
+  }
+}
+
 resource "aws_s3_bucket" "bucket" {
   bucket              = var.bucket_name
   force_destroy       = var.force_destroy
@@ -6,6 +16,8 @@ resource "aws_s3_bucket" "bucket" {
   tags = {
     Name        = var.bucket_name
     Environment = var.env
+    Project     = "terraform-1"
+    Environment = "staging"
   }
 }
 
@@ -50,7 +62,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.s3.arn
     }
   }
 }
