@@ -23,3 +23,18 @@ To run the tests, navigate to the specific test directory (e.g., `tests/aws/s3`)
 ```
 terraform test
 ```
+
+## Security Scan
+
+To ensure infrastructure security and compliance with organizational policies, run the provided security check tool:
+
+```bash
+./scripts/security_check.sh
+```
+
+This tool uses **Trivy** to scan for misconfigurations and applies custom **OPA (Rego)** policies defined in the `policy/` directory. It covers:
+- Encryption & Data Protection
+- Least Privilege (IAM)
+- Network Perimeter Defense
+- Governance & Tagging
+- Resilience & Anti-Ransomware measures
