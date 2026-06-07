@@ -1,6 +1,6 @@
 resource "aws_kms_key" "athena_key" {
   description             = "KMS key for Athena data encryption"
-  deletion_window_in_days = 7
+  deletion_window_in_days = 30 # セキュリティポリシーに従い30日に設定
   enable_key_rotation     = true
 }
 
