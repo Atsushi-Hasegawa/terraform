@@ -14,7 +14,7 @@ resource "aws_autoscaling_group" "autoscale-group" {
   desired_capacity     = lookup(var.autoscale, "desired_capacity")
   launch_template {
     id      = aws_launch_template.launch.id
-    version = "$Latest"
+    version = "1"
   }
   max_size             = lookup(var.autoscale, "max_size")
   min_size             = lookup(var.autoscale, "min_size")
