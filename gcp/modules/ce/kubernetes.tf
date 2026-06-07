@@ -17,12 +17,11 @@ resource "google_container_cluster" "container-cluster" {
     }
   }
 
-  # 2. ネットワーク防御
+  # 2. ネットワーク防御 (GCP-0053対策)
   master_authorized_networks_config {
-    # 実際には信頼できるIP範囲を指定すべきだが、まずは構造を導入
     cidr_blocks {
-      cidr_block   = "0.0.0.0/0"
-      display_name = "Warning: Open for demo"
+      cidr_block   = "192.168.1.0/24" # 実際の環境では社内VPN等のIPを指定してください
+      display_name = "Corporate VPN only"
     }
   }
 

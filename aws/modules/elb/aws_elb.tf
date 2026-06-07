@@ -1,6 +1,8 @@
 resource "aws_lb" "app-lb" {
   name               = "${var.env}-${var.service}-${lookup(var.listener, "name")}"
   load_balancer_type = "application"
+  # 指定された用途のため外部公開が必要
+  # trivy:ignore:AWS-0053
   internal           = false
   subnets            = var.subnets
   security_groups    = var.security_groups
