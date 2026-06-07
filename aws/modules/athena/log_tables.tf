@@ -30,26 +30,80 @@ resource "aws_glue_catalog_table" "vpc_flow_logs" {
       serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
     }
 
-    columns { name = "version"; type = "int" }
-    columns { name = "account_id"; type = "string" }
-    columns { name = "interface_id"; type = "string" }
-    columns { name = "srcaddr"; type = "string" }
-    columns { name = "dstaddr"; type = "string" }
-    columns { name = "srcport"; type = "int" }
-    columns { name = "dstport"; type = "int" }
-    columns { name = "protocol"; type = "bigint" }
-    columns { name = "packets"; type = "bigint" }
-    columns { name = "bytes"; type = "bigint" }
-    columns { name = "start"; type = "bigint" }
-    columns { name = "end"; type = "bigint" }
-    columns { name = "action"; type = "string" }
-    columns { name = "log_status"; type = "string" }
+    columns {
+      name = "version"
+      type = "int"
+    }
+    columns {
+      name = "account_id"
+      type = "string"
+    }
+    columns {
+      name = "interface_id"
+      type = "string"
+    }
+    columns {
+      name = "srcaddr"
+      type = "string"
+    }
+    columns {
+      name = "dstaddr"
+      type = "string"
+    }
+    columns {
+      name = "srcport"
+      type = "int"
+    }
+    columns {
+      name = "dstport"
+      type = "int"
+    }
+    columns {
+      name = "protocol"
+      type = "bigint"
+    }
+    columns {
+      name = "packets"
+      type = "bigint"
+    }
+    columns {
+      name = "bytes"
+      type = "bigint"
+    }
+    columns {
+      name = "start"
+      type = "bigint"
+    }
+    columns {
+      name = "end"
+      type = "bigint"
+    }
+    columns {
+      name = "action"
+      type = "string"
+    }
+    columns {
+      name = "log_status"
+      type = "string"
+    }
   }
 ...
-  partition_keys { name = "year"; type = "string" }
-  partition_keys { name = "month"; type = "string" }
-  partition_keys { name = "day"; type = "string" }
-  partition_keys { name = "hour"; type = "string" }
+  partition_keys {
+    name = "year"
+    type = "string"
+  }
+  partition_keys {
+    name = "month"
+    type = "string"
+  }
+  partition_keys {
+    name = "day"
+    type = "string"
+  }
+  partition_keys {
+    name = "hour"
+    type = "string"
+  }
 }
 
 # 2. コンテナ (ECS/Fargate) アプリケーションログ用テーブル
@@ -84,17 +138,44 @@ resource "aws_glue_catalog_table" "app_logs" {
       serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
     }
 
-    columns { name = "timestamp"; type = "string" }
-    columns { name = "log_level"; type = "string" }
-    columns { name = "trace_id";  type = "string" }
-    columns { name = "message";   type = "string" }
-    columns { name = "container_name"; type = "string" }
+    columns {
+      name = "timestamp"
+      type = "string"
+    }
+    columns {
+      name = "log_level"
+      type = "string"
+    }
+    columns {
+      name = "trace_id"
+      type = "string"
+    }
+    columns {
+      name = "message"
+      type = "string"
+    }
+    columns {
+      name = "container_name"
+      type = "string"
+    }
   }
 
-  partition_keys { name = "year"; type = "string" }
-  partition_keys { name = "month"; type = "string" }
-  partition_keys { name = "day"; type = "string" }
-  partition_keys { name = "hour"; type = "string" }
+  partition_keys {
+    name = "year"
+    type = "string"
+  }
+  partition_keys {
+    name = "month"
+    type = "string"
+  }
+  partition_keys {
+    name = "day"
+    type = "string"
+  }
+  partition_keys {
+    name = "hour"
+    type = "string"
+  }
 }
 
 data "aws_caller_identity" "current" {}
