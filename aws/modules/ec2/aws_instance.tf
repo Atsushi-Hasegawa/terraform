@@ -2,8 +2,8 @@ resource "aws_instance" "app" {
   count         = var.num
   ami           = var.ami
   instance_type = var.instance_type
-  subnet_id     = var.subnet_id[count.index]
-  
+  subnet_id     = length(var.subnet_id) > 0 ? element(var.subnet_id, count.index) : null
+
   # 1. ネットワーク露出の制限
   associate_public_ip_address = false
 
@@ -28,8 +28,8 @@ resource "aws_instance" "app" {
   tags = {
     Name         = "${format("web%02d", count.index + 1)}"
     BackupPolicy = "high-resilience"
-    Project      = "terraform-1"    # 必須タグの追加
-    Environment  = "staging"        # 必須タグの追加
+    Project      = "terraform-1" # 必須タグの追加
+    Environment  = "staging"     # 必須タグの追加
   }
 }
 

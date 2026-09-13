@@ -1,4 +1,6 @@
 
+mock_provider "aws" {}
+
 run "s3_bucket_creation" {
   command = plan
 

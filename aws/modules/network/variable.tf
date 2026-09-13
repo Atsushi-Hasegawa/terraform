@@ -1,5 +1,10 @@
 variable "env" {}
 variable "service" {}
+variable "project" {
+  type        = string
+  description = "Project name"
+  default     = "terraform-1"
+}
 variable "vpc_cidr" {}
 variable "subnets" {
   type = list(string)

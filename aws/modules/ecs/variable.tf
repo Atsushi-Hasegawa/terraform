@@ -76,3 +76,15 @@ variable "log_retention_in_days" {
   type        = number
   default     = 30
 }
+
+variable "firehose_arn" {
+  description = "ARN of Firehose delivery stream for Athena log integration"
+  type        = string
+  default     = null
+}
+
+variable "cw_logs_to_firehose_role_arn" {
+  description = "IAM Role ARN for CloudWatch Logs to Firehose subscription"
+  type        = string
+  default     = null
+}

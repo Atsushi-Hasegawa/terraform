@@ -10,6 +10,7 @@ resource "aws_cloudwatch_log_group" "ecs_service_log" {
 
 # アプリケーションログの Athena 連携用転送設定
 resource "aws_cloudwatch_log_subscription_filter" "ecs_to_firehose" {
+  count           = var.firehose_arn != null ? 1 : 0
   name            = "ecs-to-firehose-filter"
   log_group_name  = aws_cloudwatch_log_group.ecs_service_log.name
   filter_pattern  = ""

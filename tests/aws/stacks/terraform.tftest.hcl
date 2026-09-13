@@ -14,7 +14,7 @@ run "validate_application_stack_integration" {
   }
 
   variables {
-    region = "ap-northeast-1"
+    region          = "ap-northeast-1"
     certificate_arn = "arn:aws:acm:ap-northeast-1:123456789012:certificate/test"
     project = {
       service = "test-service"

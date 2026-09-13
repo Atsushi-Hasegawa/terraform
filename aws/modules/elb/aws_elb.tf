@@ -3,9 +3,9 @@ resource "aws_lb" "app-lb" {
   load_balancer_type = "application"
   # 指定された用途のため外部公開が必要
   # trivy:ignore:AWS-0053
-  internal           = false
-  subnets            = var.subnets
-  security_groups    = var.security_groups
+  internal        = false
+  subnets         = var.subnets
+  security_groups = var.security_groups
 
   # 1. 不正なヘッダーを遮断 (HIGH対策)
   drop_invalid_header_fields = true
@@ -48,7 +48,7 @@ resource "aws_lb_listener" "listener_https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06" # セキュアなポリシー
-  certificate_arn   = var.certificate_arn                 # 変数経由で指定
+  certificate_arn   = var.certificate_arn                   # 変数経由で指定
 
   default_action {
     target_group_arn = aws_lb_target_group.target-group.arn

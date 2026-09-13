@@ -1,6 +1,8 @@
 variable "bucket_name" {}
 variable "bucket_acl" {}
-variable "env" {}
+variable "env" {
+  default = "staging"
+}
 
 # 高レジリエンス設定フラグ
 variable "enable_versioning" {
@@ -27,3 +29,9 @@ variable "force_destroy" {
   default     = false
 }
 variable "web_acl_id" { default = null }
+
+variable "cloudfront_origin_access_comment" {
+  description = "Comment for CloudFront origin access identity"
+  type        = string
+  default     = "CloudFront Origin Access Identity"
+}

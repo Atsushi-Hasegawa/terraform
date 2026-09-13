@@ -8,12 +8,12 @@ run "backup_resilience_compliance" {
   }
 
   variables {
-    env                = "test"
-    vault_name         = "resilience-vault"
-    retention_days     = 30
-    min_retention_days = 7
+    env                 = "test"
+    vault_name          = "resilience-vault"
+    retention_days      = 30
+    min_retention_days  = 7
     changeable_for_days = 3
-    resource_tags      = {
+    resource_tags = {
       BackupPolicy = "high-resilience"
     }
   }

@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "ap-northeast-1"
+}
+
 module "s3" {
   source = "../../../aws/modules/s3"
 

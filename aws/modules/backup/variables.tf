@@ -35,7 +35,7 @@ variable "backup_schedule" {
 variable "resource_tags" {
   description = "Tags to identify resources to back up"
   type        = map(string)
-  default     = {
+  default = {
     BackupPolicy = "high-resilience"
   }
 }
