@@ -121,7 +121,7 @@ resource "aws_vpc_security_group_egress_rule" "ec2_egress_https" {
   ip_protocol       = "tcp"
   # 外部パッケージ取得およびAWSサービス連携のためHTTPS外向き通信を許可
   # trivy:ignore:AWS-0104
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4 = "0.0.0.0/0"
 
   tags = {
     Name        = format("%s-ec2-egress-https", var.env)
@@ -186,7 +186,7 @@ resource "aws_vpc_security_group_egress_rule" "ecs_egress_https" {
   ip_protocol       = "tcp"
   # コンテナイメージ取得およびAWSサービス連携のためHTTPS外向き通信を許可
   # trivy:ignore:AWS-0104
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4 = "0.0.0.0/0"
 
   tags = {
     Name        = format("%s-ecs-egress-https", var.env)
