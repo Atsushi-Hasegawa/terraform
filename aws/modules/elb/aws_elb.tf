@@ -71,3 +71,47 @@ resource "aws_lb_listener" "listener_http" {
     }
   }
 }
+
+# --- L7 Remediation: AWS WAFv2 Association ---
+resource "aws_wafv2_web_acl" "alb_waf" {
+  name        = "${var.env}-${var.service}-alb-waf"
+  scope       = "REGIONAL"
+  description = "AWS WAFv2 Web ACL for Application Load Balancer"
+
+  default_action {
+    allow {}
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "${var.env}-${var.service}-alb-waf-metric"
+    sampled_requests_enabled   = true
+  }
+
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesCommonRuleSetMetric"
+      sampled_requests_enabled   = true
+    }
+  }
+}
+
+resource "aws_wafv2_web_acl_association" "alb_waf_assoc" {
+  resource_arn = aws_lb.app-lb.arn
+  web_acl_arn  = aws_wafv2_web_acl.alb_waf.arn
+}

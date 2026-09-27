@@ -14,3 +14,9 @@ tfplan.*
 
 # Terraform lock files
 .terraform.tfstate.lock.info
+
+# Python & testing
+__pycache__/
+*.pyc
+*.bak
+.pytest_cache/

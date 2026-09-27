@@ -1,0 +1,140 @@
+# ==============================================================================
+# OSI Reference Model Security Audit Configuration & Policy Rules
+# ==============================================================================
+
+settings:
+  fail_on_severity:
+    - "CRITICAL"
+    - "HIGH"
+  allowed_regions:
+    - "ap-northeast-1"
+  dangerous_ports:
+    - "22"
+    - "3389"
+  db_ports:
+    - "3306"
+    - "5432"
+    - "6379"
+    - "27017"
+  secure_ssl_policies:
+    - "ELBSecurityPolicy-TLS13-1-2-2021-06"
+    - "ELBSecurityPolicy-TLS-1-2-2017-01"
+
+# 例外・抑止リスト (Suppressions)
+# 意図的に許可するリソースがある場合はここに定義します
+suppressions: []
+  # - check_id: "L3-NETWORK-ACL"
+  #   resource: "aws_network_acl.main"
+  #   reason: "Managed by third-party security virtual appliance"
+
+# OSI レイヤ別ルール設定
+# 各ルールの有効化 (enabled)、重要度 (severity) の上書きが可能です
+rules:
+  # --- Layer 1: 物理層 (Physical Layer) ---
+  L1-REGION-POLICY:
+    enabled: true
+    severity: HIGH
+    title: "東京リージョン外のリソース設定検出"
+    description: "東京リージョン (ap-northeast-1) 以外のリージョンが指定されているリソースを検知します。"
+
+  L1-MULTI-AZ:
+    enabled: true
+    severity: MEDIUM
+    title: "Multi-AZ 物理冗長化の不足"
+    description: "データセンター障害対策として、最低2つ以上のAvailability Zoneへのサブネット分散を検査します。"
+
+  # --- Layer 2: データリンク層 (Data Link Layer) ---
+  L2-VPC-ISOLATION:
+    enabled: true
+    severity: CRITICAL
+    title: "専用 VPC の未定義 (デフォルトVPC利用リスク)"
+    description: "AWS HypervisorによるL2パケット分離およびプライベート空間を確保するための専用VPC定義を検査します。"
+
+  # --- Layer 3: ネットワーク層 (Network Layer) ---
+  L3-SUBNET-SEGREGATION:
+    enabled: true
+    severity: HIGH
+    title: "パブリック / プライベートサブネットの未分離"
+    description: "データベースやアプリケーションをインターネットから隔離するためのPrivate Subnetの存在を検査します。"
+
+  L3-VPC-FLOW-LOGS:
+    enabled: true
+    severity: HIGH
+    title: "VPC Flow Logs の未有効化"
+    description: "IPパケットの拒否・許可の監査およびインシデント追跡のためのVPC Flow Logs有効化を検査します。"
+
+  L3-NETWORK-ACL:
+    enabled: true
+    severity: MEDIUM
+    title: "カスタム Network ACL (NACL) の未定義"
+    description: "サブネット境界でのステートレスパケットフィルタリングを行うカスタムNACLの定義を検査します。"
+
+  # --- Layer 4: トランスポート層 (Transport Layer) ---
+  L4-MANAGEMENT-PORTS:
+    enabled: true
+    severity: CRITICAL
+    title: "管理ポート (SSH:22 / RDP:3389) のインターネット全開放"
+    description: "SSH(22)やRDP(3389)が0.0.0.0/0に全開放されている危険なセキュリティグループルールを検知します。"
+
+  L4-DATABASE-PORTS:
+    enabled: true
+    severity: CRITICAL
+    title: "データベースポートのインターネット全開放"
+    description: "MySQL(3306)やPostgreSQL(5432)などのDBポートがインターネットに露出していないかを検査します。"
+
+  L4-UNRESTRICTED-EGRESS:
+    enabled: true
+    severity: HIGH
+    title: "アウトバウンド通信 (Egress) の全開放"
+    description: "マルウェアのC2通信やデータ持ち出しを防ぐため、Egressが0.0.0.0/0:allになっていないかを検査します。"
+
+  # --- Layer 5: セッション層 (Session Layer) ---
+  L5-ALB-HTTPS:
+    enabled: true
+    severity: CRITICAL
+    title: "ALB における HTTPS 暗号化セッションの未設定"
+    description: "通信の盗聴防止のため、ALBにおけるHTTPS(443)リスナーおよびHTTPからのリダイレクトを検査します。"
+
+  L5-TLS-POLICY:
+    enabled: true
+    severity: HIGH
+    title: "非推奨または古い SSL/TLS ポリシーの利用"
+    description: "脆弱な暗号スイートを排除し、TLS 1.2 / TLS 1.3を強制するSSLポリシーの適用を検査します。"
+
+  # --- Layer 6: プレゼンテーション層 (Presentation Layer) ---
+  L6-RDS-TRANSPORT-ENCRYPTION:
+    enabled: true
+    severity: HIGH
+    title: "RDS 通信の SSL/TLS 強制設定の欠落"
+    description: "RDSパラメータグループで require_secure_transport = ON が強制されているかを検査します。"
+
+  L6-DATA-AT-REST-ENCRYPTION:
+    enabled: true
+    severity: CRITICAL
+    title: "未暗号化ストレージの検出"
+    description: "EBSボリューム、RDSインスタンス、S3バケット等の保存時データ暗号化 (KMS CMK) を検査します。"
+
+  # --- Layer 7: アプリケーション層 (Application Layer) ---
+  L7-WAF-PROTECTION:
+    enabled: true
+    severity: HIGH
+    title: "ALB / CloudFront への AWS WAFv2 未紐付け"
+    description: "SQLi, XSS, レート制限等のL7攻撃を防御するためのAWS WAFv2 Web ACLアタッチを検査します。"
+
+  L7-HTTP-HEADER-DROPPING:
+    enabled: true
+    severity: MEDIUM
+    title: "不正な HTTP ヘッダーの遮断が無効"
+    description: "HTTP Request Smuggling対策として、ALBの drop_invalid_header_fields = true を検査します。"
+
+  L7-IMDSV2-PROTECTION:
+    enabled: true
+    severity: CRITICAL
+    title: "IMDSv1 許可による IAM 認証情報奪取リスク"
+    description: "SSRF脆弱性によるIAMクレデンシャル漏洩を防ぐため、EC2の IMDSv2 (http_tokens = required) を検査します。"
+
+  L7-CONTAINER-IMMUTABILITY:
+    enabled: true
+    severity: MEDIUM
+    title: "コンテナルートファイルシステムの書き込み可能設定"
+    description: "コンテナ内への不正改ざんを防ぐため、readonlyRootFilesystem = true を検査します。"
