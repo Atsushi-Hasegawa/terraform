@@ -20,6 +20,12 @@ Terraformをはじめとする Infrastructure as Code (IaC) の普及に伴い�
 
 そこで今回、古典的かつ最も堅牢なネットワーク設計の基礎である **「OSI参照モデル（L1〜L7）」** の概念を Terraform 監査にマッピングし、さらに **Conftest (Open Policy Agent) によるデプロイ前遮断ゲート** と **ワンコマンド自動修復 (`--fix`)** を備えたセキュリティツールキットを実装しました。
 
+:::message
+**📦 ソースコードリポジトリ**
+本記事で解説するスクリプト、OPA (Rego) ポリシー、設定ファイル、テストコードの全容は GitHub にて公開しています。
+👉 [GitHub: Atsushi-Hasegawa/terraform (feature/add-osi-security-audit ブランチ)](https://github.com/Atsushi-Hasegawa/terraform/tree/feature/add-osi-security-audit)
+:::
+
 本記事では、その設計思想から実装の詳細、実際の検証シナリオまでを一挙に解説します。
 
 ---
@@ -83,12 +89,13 @@ flowchart TD
 ```
 
 ### 主要ファイル構成
-- **`scripts/osi_security_audit.py`**: OSI 7階層監査、Mermaid トポロジー図生成、自動修正エンジン（Python標準ライブラリのみで動作）
-- **`scripts/osi_rules.yaml`**: 外部化されたルール定義・重要度・例外抑止設定
-- **`scripts/pre_apply_gate.sh`**: 4段階のチェックを直列実行するデプロイ前遮断ゲート
-- **`scripts/tf_safe_apply.sh`**: Terraform Plan 生成後にゲートを検証し、全クリア時のみ Apply するラッパー
-- **`scripts/install_hooks.sh`**: Git Pre-commit Hook インストーラー
-- **`tests/test_osi_security_audit.py`**: pytest による12件の単体・回帰テストスイート
+- **[`scripts/osi_security_audit.py`](https://github.com/Atsushi-Hasegawa/terraform/blob/feature/add-osi-security-audit/scripts/osi_security_audit.py)**: OSI 7階層監査、Mermaid トポロジー図生成、自動修正エンジン（Python標準ライブラリのみで動作）
+- **[`scripts/osi_rules.yaml`](https://github.com/Atsushi-Hasegawa/terraform/blob/feature/add-osi-security-audit/scripts/osi_rules.yaml)**: 外部化されたルール定義・重要度・例外抑止設定
+- **[`scripts/pre_apply_gate.sh`](https://github.com/Atsushi-Hasegawa/terraform/blob/feature/add-osi-security-audit/scripts/pre_apply_gate.sh)**: 4段階のチェックを直列実行するデプロイ前遮断ゲート
+- **[`scripts/tf_safe_apply.sh`](https://github.com/Atsushi-Hasegawa/terraform/blob/feature/add-osi-security-audit/scripts/tf_safe_apply.sh)**: Terraform Plan 生成後にゲートを検証し、全クリア時のみ Apply するラッパー
+- **[`scripts/install_hooks.sh`](https://github.com/Atsushi-Hasegawa/terraform/blob/feature/add-osi-security-audit/scripts/install_hooks.sh)**: Git Pre-commit Hook インストーラー
+- **[`tests/test_osi_security_audit.py`](https://github.com/Atsushi-Hasegawa/terraform/blob/feature/add-osi-security-audit/tests/test_osi_security_audit.py)**: pytest による12件の単体・回帰テストスイート
+- **[`policy/`](https://github.com/Atsushi-Hasegawa/terraform/tree/feature/add-osi-security-audit/policy)**: Conftest / Trivy で共有される OPA Rego ポリシー群
 
 ---
 
@@ -294,5 +301,9 @@ AI アシスタントに対して：
 - **OSI 参照モデルという普遍的なメンタルモデル** による、インフラセキュリティの直感的な可視化
 - **「指摘」にとどまらない、具体的な修正コード提示と自動修復（`--fix`）** による開発者体験の向上
 - **Conftest (OPA) を組み込んだ多段セキュリティゲート** による、デプロイ前の確実な事故防止（Shift-Left & Fail-Closed）
+
+今回作成したスクリプトや設定一式はすべて GitHub にて公開しています。ぜひクローンしてお手元の Terraform 環境で試してみてください！
+
+👉 **[GitHub リポジトリ: Atsushi-Hasegawa/terraform (feature/add-osi-security-audit)](https://github.com/Atsushi-Hasegawa/terraform/tree/feature/add-osi-security-audit)**
 
 Terraform の静的解析やセキュリティガバナンスで「ルールが形骸化している」「修正が追いつかない」とお悩みの方は、ぜひ OSI 参照モデルと OPA を組み合わせたアプローチを試してみてください！
